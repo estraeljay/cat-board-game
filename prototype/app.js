@@ -13,6 +13,8 @@ const REAL_TIMER_MS = { roll: 20000, pvp: 30000 };
 const BOT_STEP_MS = 550;
 
 let game = null;
+let screen = "menu"; // menu | setup | deck | shop | account | inventory (in-game when game !== null)
+let deckClass = "knight"; // deck-screen selection; used as seat 1's default class
 let blockBounds = {}; // per-block-type bounding boxes, for slicing facade art across tiles
 let panelCollapsed = false; // right info panel hidden -> board uses full width
 const PANEL_W = 340;
@@ -66,7 +68,7 @@ function renderSetup() {
   const classKeys = Object.keys(CLASSES);
   const campaign = setupMode === "campaign";
   const rows = Array.from({ length: setupPlayerCount }, (_, i) => {
-    const cls = classKeys[i % classKeys.length];
+    const cls = i === 0 ? deckClass : classKeys[i % classKeys.length];
     const isBot = campaign && setupBots[i];
     return `<div class="playerSetupRow">
       <input type="text" class="setupName" value="${seatDefaultName(i)}">
@@ -78,7 +80,7 @@ function renderSetup() {
   root.innerHTML = `
     <button id="fsBtn">⛶ Fullscreen</button>
     <div class="setupWrap"><div>
-      <h1>Cat Board Game — Vertical Slice</h1>
+      <div class="screenHead"><button class="backBtn" id="backBtn">← Menu</button><h1>Cat Board Game — Vertical Slice</h1></div>
       <p class="note">Board movement, proximity, PvP battles, alliances, NPC locations/hazards, property cards, and the Coin economy.</p>
       <div class="setup">
         <div class="modePick">
@@ -100,6 +102,7 @@ function renderSetup() {
     </div></div>
   `;
   wireChromeButtons();
+  document.getElementById("backBtn").addEventListener("click", renderMenu);
   document.querySelectorAll(".modeBtn").forEach((btn) =>
     btn.addEventListener("click", () => {
       setupMode = btn.dataset.mode;
@@ -311,96 +314,150 @@ function renderControls() {
     </div>`;
   }
 
-  if (g.phase === "in-pvp") {
-    return renderPvp();
-  }
-
   return `<div class="controls">Unhandled phase: ${g.phase}</div>`;
 }
 
-function renderPvp() {
-  const battle = game.activeBattle;
-  if (!battle) return "";
+// --- PvP battle scene (full-window) ---------------------------------
 
-  if (battle.phase === "draw") {
-    battle.drawPhase();
-    return renderPvp();
+function battleActorId(b) {
+  if (b.pendingWithdrawal) return b.pendingWithdrawal.opponentId;
+  if (b._awaitingGuard) return b.defenderId;
+  return b.attackerId;
+}
+
+function battleLogLine(e) {
+  const nm = (id) => game.players.find((p) => p.id === id)?.name || id;
+  switch (e.event) {
+    case "draw": return `${nm(e.playerId)} draws.`;
+    case "attack-passed-no-card": return `${nm(e.playerId)} passes (no attack card).`;
+    case "attack-resolved":
+      return `${nm(e.attackerId)} hits ${nm(e.defenderId)} for ${e.damage} (${e.guardCard ? "guarded" : "no guard"}) — ${nm(e.defenderId)} at ${e.defenderHpAfter} HP.`;
+    case "withdrawal-requested": return `${nm(e.playerId)} requests withdrawal.`;
+    case "withdrawal-accepted": return `Withdrawal accepted — battle ends, no winner.`;
+    case "withdrawal-denied": return `Withdrawal denied.`;
+    default: return JSON.stringify(e);
   }
+}
 
-  if (battle.pendingWithdrawal) {
-    const { requesterId, opponentId } = battle.pendingWithdrawal;
-    const opp = game.players.find((p) => p.id === opponentId);
-    const req = game.players.find((p) => p.id === requesterId);
-    return `<div class="controls">
-      <h2>PvP: ${req.name} requests withdrawal</h2>
-      <p>${opp.name}, accept?</p>
-      <button id="withdrawAcceptBtn">Accept</button>
-      <button id="withdrawDenyBtn">Deny</button>
-      ${battlePanel(battle)}
-    </div>`;
-  }
-
-  if (battle.phase === "end") {
-    battle.endPhase();
-    return renderPvp();
-  }
-
-  const attacker = game.players.find((p) => p.id === battle.attackerId);
-  const defender = game.players.find((p) => p.id === battle.defenderId);
-  const attackerState = battle.players[battle.attackerId];
-  const defenderState = battle.players[battle.defenderId];
-
-  startTimer("pvp", () => {
-    // Design: 30s PvP turn auto-ends if unused. "No guard" is a clean, well-defined
-    // no-action state for the defender, so that side auto-resolves on timeout.
-    // The attacker's side has no such clean default (skipping while holding a
-    // playable attack card isn't modeled) — ending that turn is always a manual
-    // "Pass (no card)" click, never forced by the timer.
-    if (battle._awaitingGuard) {
-      battle.respondGuard(null);
-      if (battle.phase === "finished") game.finishPvpIfOver();
-      render();
-    }
-  });
-
-  let actionHtml;
-  if (battle._awaitingGuard) {
-    const guards = defenderState.hand.filter((c) => c.type === "guard");
-    actionHtml = `<h2>${defender.name} — guard against ${attacker.name}'s attack?</h2>
-      ${guards.map((c) => `<button class="guardBtn" data-id="${c.id}">${c.name} (${c.value})</button>`).join("")}
-      <button id="noGuardBtn">No Guard</button>`;
-  } else {
-    const attacks = attackerState.hand.filter((c) => c.type === "attack");
-    actionHtml = `<h2>${attacker.name}'s turn — play an attack card</h2>
-      ${attacks.length
-        ? attacks.map((c) => `<button class="attackBtn" data-id="${c.id}">${c.name} (${c.value})</button>`).join("")
-        : `<p>No attack card in hand.</p><button id="skipAttackBtn">Pass (no card)</button>`}`;
-  }
-
-  return `<div class="controls">
-    <p>PvP turn timer: <span id="timer"></span></p>
-    ${actionHtml}
-    <div class="withdrawRow">
-      <button class="withdrawReqBtn" data-id="${attacker.id}" ${battle.withdrawalUsed[attacker.id] ? "disabled" : ""}>${attacker.name} requests withdrawal</button>
-      <button class="withdrawReqBtn" data-id="${defender.id}" ${battle.withdrawalUsed[defender.id] ? "disabled" : ""}>${defender.name} requests withdrawal</button>
+function fighterCard(bp, p, active) {
+  const pct = Math.max(0, Math.min(100, bp.hp));
+  return `<div class="fighter${active ? " active" : ""}">
+    <div class="fighterHead">
+      <span class="fighterName">${p.name}${p.isBot ? ' <span class="botTag">bot</span>' : ""}</span>
+      <span class="muted">${CLASSES[p.className]?.label || p.className}</span>
     </div>
-    ${battlePanel(battle)}
+    <div class="hpTrack"><div class="hpFill" style="width:${pct}%"></div><span class="hpNum">${Math.max(0, bp.hp)} HP</span></div>
+    <div class="deckMeta"><span title="cards left in deck">🂠 Deck ${bp.deck.length}</span><span>✋ Hand ${bp.hand.length}</span><span>🗑 ${bp.discard.length}</span></div>
   </div>`;
 }
 
-function battlePanel(battle) {
-  return `<div class="battlePanel">
-    ${Object.values(battle.players)
-      .map((bp) => `<div>${game.players.find((p) => p.id === bp.id).name}: HP ${bp.hp}, hand ${bp.hand.length}</div>`)
-      .join("")}
-    <div class="battleLog">${battle.log.slice(-8).map((e) => `<div>${JSON.stringify(e)}</div>`).join("")}</div>
-  </div>`;
+function battleSceneHtml() {
+  const g = game;
+  const b = g.activeBattle;
+  const actorId = battleActorId(b);
+  const actor = g.players.find((p) => p.id === actorId);
+  const actorS = b.players[actorId];
+  const foeId = actorId === b.attackerId ? b.defenderId : b.attackerId;
+  const foe = g.players.find((p) => p.id === foeId);
+  const foeS = b.players[foeId];
+  const atkName = g.players.find((p) => p.id === b.attackerId).name;
+
+  const table = b._awaitingGuard && b._pendingAttackCard
+    ? `<div class="tableWrap">${cardHtml(b._pendingAttackCard, "attack")}<div class="muted">${atkName}'s attack</div></div>`
+    : `<div class="tableWrap empty"><div class="muted">attack table</div></div>`;
+
+  let action;
+  if (b.pendingWithdrawal) {
+    const req = g.players.find((p) => p.id === b.pendingWithdrawal.requesterId).name;
+    action = actor.isBot
+      ? `<p class="muted">${actor.name} is deciding on the withdrawal…</p>`
+      : `<h3>${req} requests withdrawal</h3>
+         <div class="actBtns"><button id="withdrawAcceptBtn">Accept — end, no winner</button>
+         <button id="withdrawDenyBtn">Deny — fight on</button></div>`;
+  } else if (b._awaitingGuard) {
+    const guards = actorS.hand.filter((c) => c.type === "guard");
+    action = actor.isBot
+      ? `<p class="muted">${actor.name} is choosing a guard…</p>`
+      : `<h3>${actor.name} — play a Guard, or take the hit</h3>
+         <div class="hand">${guards.map((c) => cardHtml(c, "guard", { dataId: true, playable: true, cls: "guardBtn" })).join("")}</div>
+         <div class="actBtns"><button id="noGuardBtn" class="takeHit">No Guard (take the hit)</button></div>`;
+  } else {
+    const attacks = actorS.hand.filter((c) => c.type === "attack");
+    action = actor.isBot
+      ? `<p class="muted">${actor.name} is choosing an attack…</p>`
+      : attacks.length
+      ? `<h3>${actor.name}'s turn — play an Attack</h3>
+         <div class="hand">${attacks.map((c) => cardHtml(c, "attack", { dataId: true, playable: true, cls: "attackBtn" })).join("")}</div>`
+      : `<h3>${actor.name}'s turn</h3><p class="muted">No attack cards in hand.</p>
+         <div class="actBtns"><button id="skipAttackBtn" class="takeHit">Pass (no card)</button></div>`;
+  }
+
+  const fullHand = actorS.hand
+    .map((c) => cardHtml(c, c.type, { small: true }))
+    .join("");
+
+  return `
+    <button id="fsBtn">⛶ Fullscreen</button>
+    <button id="menuBtn">☰ Menu</button>
+    <div class="battleScene">
+      <div class="battleTop">
+        ${fighterCard(foeS, foe, false)}
+        <div class="vsBadge">VS</div>
+        ${fighterCard(actorS, actor, true)}
+      </div>
+      <div class="battleMid">
+        ${table}
+        <div class="battleTimer">⏱ <span id="timer"></span></div>
+      </div>
+      <div class="battleAction">${action}</div>
+      <div class="battleBar">
+        <button class="withdrawReqBtn" data-id="${actorId}" ${b.withdrawalUsed[actorId] ? "disabled" : ""}>Request withdrawal</button>
+        <button id="battleLogToggle">Battle log</button>
+      </div>
+      <div class="handStrip"><span class="muted">${actor.name}'s hand</span><div class="handStripCards">${fullHand}</div></div>
+      <div class="battleLog" id="battleLogBox" hidden>${b.log.slice(-14).map((e) => `<div>${battleLogLine(e)}</div>`).join("")}</div>
+    </div>`;
+}
+
+function startPvpTimerIfHuman() {
+  const b = game.activeBattle;
+  const actor = game.players.find((p) => p.id === battleActorId(b));
+  if (!actor || actor.isBot) return;
+  // Design: 30s PvP turn auto-ends if unused. Only the defender's "no guard" is a
+  // clean auto-resolvable no-action state — the attacker always ends their turn manually.
+  startTimer("pvp", () => {
+    if (b._awaitingGuard) {
+      b.respondGuard(null);
+      if (b.phase === "finished") game.finishPvpIfOver();
+      render();
+    }
+  });
 }
 
 function render() {
   clearTimer();
+
+  // PvP takes over the whole window. Auto-advance the mechanical sub-phases first.
+  if (game && game.phase === "in-pvp" && game.activeBattle) {
+    const b = game.activeBattle;
+    if (b.phase === "draw") { b.drawPhase(); return render(); }
+    if (!b.pendingWithdrawal && b.phase === "end") { b.endPhase(); return render(); }
+    if (b.phase === "finished") { game.finishPvpIfOver(); return render(); }
+    root.innerHTML = battleSceneHtml();
+    wireEvents();
+    wireChromeButtons();
+    document.getElementById("battleLogToggle")?.addEventListener("click", () => {
+      const box = document.getElementById("battleLogBox");
+      if (box) box.hidden = !box.hidden;
+    });
+    startPvpTimerIfHuman();
+    scheduleBotStep();
+    return;
+  }
+
   root.innerHTML = `
     <button id="fsBtn">⛶ Fullscreen</button>
+    <button id="menuBtn">☰ Menu</button>
     <button id="panelBtn">${panelCollapsed ? "☰ Show panel" : "✕ Hide panel"}</button>
     <div class="layout">
       <div class="left">${renderBoard()}</div>
@@ -592,6 +649,13 @@ function wireChromeButtons() {
       if (game) render(); else renderSetup();
     });
   }
+  const mb = document.getElementById("menuBtn");
+  if (mb) {
+    mb.addEventListener("click", () => {
+      if (game && game.phase !== "game-over" && !confirm("Leave the current game and return to the menu?")) return;
+      renderMenu();
+    });
+  }
 }
 
 // Re-fit the board to the window on resize / fullscreen toggle (debounced).
@@ -609,7 +673,7 @@ function wireEvents() {
     clearTimeout(botTimer);
     clearTimer();
     game = null;
-    renderSetup();
+    renderMenu();
   });
   document.getElementById("rollBtn")?.addEventListener("click", () => {
     g.rollDice();
@@ -715,5 +779,126 @@ function wireEvents() {
   });
 }
 
-window.__renderSetup = renderSetup; // debug hook
-renderSetup();
+// --- Menu / navigation shell -----------------------------------------
+
+function goto(s) {
+  screen = s;
+  if (s === "setup") renderSetup();
+  else if (s === "deck") renderDeck();
+  else if (s === "shop") renderStub("🛒 Shop", shopBody());
+  else if (s === "account") renderStub("👤 Account", accountBody());
+  else if (s === "inventory") renderStub("🎒 Inventory", inventoryBody());
+  else renderMenu();
+}
+
+function renderMenu() {
+  screen = "menu";
+  game = null;
+  clearTimer();
+  clearTimeout(botTimer);
+  root.innerHTML = `
+    <button id="fsBtn">⛶ Fullscreen</button>
+    <div class="menuWrap"><div class="menu">
+      <h1>🐾 Cat Board Game</h1>
+      <p class="note">Vertical-slice prototype — core loop, PvP card battles, alliances, and Campaign vs bots.</p>
+      <div class="menuBtns">
+        <button class="menuBtn big" data-go="setup">▶ Play</button>
+        <button class="menuBtn" data-go="deck">🃏 Deck</button>
+        <button class="menuBtn" data-go="shop">🛒 Shop</button>
+        <button class="menuBtn" data-go="account">👤 Account</button>
+        <button class="menuBtn" data-go="inventory">🎒 Inventory</button>
+      </div>
+    </div></div>`;
+  wireChromeButtons();
+  document.querySelectorAll(".menuBtn").forEach((b) => b.addEventListener("click", () => goto(b.dataset.go)));
+}
+
+function renderStub(title, bodyHtml) {
+  root.innerHTML = `
+    <button id="fsBtn">⛶ Fullscreen</button>
+    <div class="menuWrap"><div class="screenCard">
+      <div class="screenHead"><button class="backBtn" id="backBtn">← Menu</button><h1>${title}</h1></div>
+      ${bodyHtml}
+    </div></div>`;
+  wireChromeButtons();
+  document.getElementById("backBtn").addEventListener("click", renderMenu);
+}
+
+function shopBody() {
+  const items = [
+    ["Booster Pack", "Random cards — rarity mix TBD (Section 12/17)"],
+    ["500 Fel", "Persistent currency — property leveling, entry fees"],
+    ["Cosmetic Cat", "New skin for an existing class"],
+    ["Board Theme", "Cosmetic board reskin"],
+  ];
+  return `<p class="note">Gems buy Fel, properties, Booster Packs, cosmetic cats and board themes (Section 16). Real-money purchases aren't wired into this prototype.</p>
+    <div class="shopGrid">${items
+      .map(([n, d]) => `<div class="shopItem"><b>${n}</b><span class="muted">${d}</span><button disabled>Buy (— Gems)</button></div>`)
+      .join("")}</div>`;
+}
+
+function accountBody() {
+  return `<p class="note">No persistence in the prototype — these reset every load.</p>
+    <div class="statGrid">
+      <div><b>Fel</b><span class="muted">—</span></div>
+      <div><b>Gems</b><span class="muted">—</span></div>
+      <div><b>Campaign coins carried</b><span class="muted">—</span></div>
+      <div><b>Prized wins</b><span class="muted">0</span></div>
+      <div><b>Default class</b><span class="muted">${CLASSES[deckClass]?.label || deckClass}</span></div>
+    </div>`;
+}
+
+function inventoryBody() {
+  const cats = Object.values(CLASSES).map((c) => c.label).join(", ");
+  return `<p class="note">Permanent collection (Section 21). Placeholder — no collection system in the prototype.</p>
+    <div class="invGrid">
+      <div><b>Cats / Classes</b><span class="muted">${cats} (all unlocked here)</span></div>
+      <div><b>Equipment</b><span class="muted">8 slots — none (no equipment system yet)</span></div>
+      <div><b>Cards</b><span class="muted">Each class's 10 Attack + 10 Guard starter deck — see 🃏 Deck</span></div>
+      <div><b>Properties</b><span class="muted">None owned</span></div>
+    </div>`;
+}
+
+// --- Card component --------------------------------------------------
+
+function cardHtml(card, type, opts = {}) {
+  const frame = `../assets/cards/frame-${type}.svg`;
+  const extra = [opts.cls, opts.playable ? "playable" : "", opts.small ? "small" : ""].filter(Boolean).join(" ");
+  const id = opts.dataId ? ` data-id="${card.id}"` : "";
+  return `<div class="card card-${type} ${extra}"${id} style="background-image:url('${frame}')" title="${card.name} (${card.value})">
+      <span class="cardVal">${card.value}</span>
+      <span class="cardName">${card.name}</span>
+    </div>`;
+}
+
+// --- Deck screen ---------------------------------------------------
+
+function renderDeck() {
+  screen = "deck";
+  const classKeys = Object.keys(CLASSES);
+  const def = CLASSES[deckClass];
+  root.innerHTML = `
+    <button id="fsBtn">⛶ Fullscreen</button>
+    <div class="menuWrap"><div class="screenCard wide">
+      <div class="screenHead"><button class="backBtn" id="backBtn">← Menu</button><h1>🃏 Deck — ${def.label}</h1></div>
+      <p class="note">Every class has a fixed 10 Attack + 10 Guard starter deck (design bible Section 06). In the full game you'll build a custom deck from your card collection (Section 17) — for now, choose the class loadout you'll play.</p>
+      <div class="classPick">
+        ${classKeys.map((k) => `<button class="classBtn ${k === deckClass ? "sel" : ""}" data-k="${k}">${CLASSES[k].label}</button>`).join("")}
+      </div>
+      <h3>Attack · 10 cards</h3>
+      <div class="cardGrid">${def.attack.map((c) => cardHtml(c, "attack")).join("")}</div>
+      <h3>Guard · 10 cards</h3>
+      <div class="cardGrid">${def.guard.map((c) => cardHtml(c, "guard")).join("")}</div>
+      <div class="deckFoot"><button id="useLoadoutBtn" class="menuBtn big">Play as ${def.label} →</button></div>
+    </div></div>`;
+  wireChromeButtons();
+  document.getElementById("backBtn").addEventListener("click", renderMenu);
+  document.querySelectorAll(".classBtn").forEach((b) =>
+    b.addEventListener("click", () => { deckClass = b.dataset.k; renderDeck(); })
+  );
+  document.getElementById("useLoadoutBtn").addEventListener("click", () => goto("setup"));
+}
+
+window.__renderMenu = renderMenu; // debug hook
+window.__render = render; // debug hook
+renderMenu();

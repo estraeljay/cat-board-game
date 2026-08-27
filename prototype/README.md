@@ -25,6 +25,23 @@ Art: drop PNGs into `../assets/` per `../assets/README.md` and they render autom
 - `game.js` — turn loop, movement/forks, proximity check, alliances, victory condition (Sections 01/14), property/toll/card-draw logic.
 - `app.js` / `index.html` — hotseat UI.
 
+## Screens
+
+The prototype now opens on a **main menu**: ▶ Play, 🃏 Deck, 🛒 Shop, 👤 Account, 🎒 Inventory.
+
+- **Deck** — browse a class's 10 Attack + 10 Guard starter cards as card visuals, switch
+  class, and "Play as X" carries that class into seat 1 on the setup screen. (No custom
+  deckbuilding yet — there's no card collection; see design §17.)
+- **Shop / Account / Inventory** — placeholder screens that mirror the design's intent
+  (Gems/Booster Packs, persistent Fel/Gems, the permanent collection) but do nothing;
+  those systems aren't in the prototype.
+- **PvP** now opens a **full-window battle scene** instead of the side panel: both fighters
+  with HP bars and **deck / hand / discard counts**, the attack table, your hand as
+  clickable cards, the guard step, a withdrawal button and a battle-log toggle. Cards use
+  `assets/cards/frame-attack.svg` / `frame-guard.svg` as their frame (with the power number
+  and name drawn on top) — see `assets/cards/README.md`.
+- **☰ Menu** button (top-right in-game) returns to the menu.
+
 ## Modes
 
 The load screen offers **Prized Game** (default — the full hotseat build described below) and
