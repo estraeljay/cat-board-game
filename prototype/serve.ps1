@@ -24,10 +24,14 @@ while ($listener.IsListening) {
     try {
         $res.KeepAlive = $false
         $path = $req.Url.LocalPath
-        # Redirect the bare root and /prototype to the actual page so relative imports resolve.
+        # Bounce the bare root / /prototype to the real page (200 + meta-refresh, so a
+        # readiness probe that wants 200 is happy and relative imports still resolve).
         if ($path -eq "/" -or $path -eq "/prototype" -or $path -eq "/prototype/") {
-            $res.StatusCode = 302
-            $res.RedirectLocation = "/prototype/index.html"
+            $html = '<!doctype html><meta http-equiv="refresh" content="0; url=/prototype/index.html"><a href="/prototype/index.html">Cat Board Game</a>'
+            $b = [System.Text.Encoding]::UTF8.GetBytes($html)
+            $res.ContentType = "text/html"
+            $res.ContentLength64 = $b.Length
+            if ($req.HttpMethod -ne "HEAD") { $res.OutputStream.Write($b, 0, $b.Length) }
             $res.OutputStream.Close()
             continue
         }

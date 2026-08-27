@@ -10,6 +10,8 @@ const REAL_TIMER_MS = { roll: 20000, pvp: 30000 };
 
 let game = null;
 let blockBounds = {}; // per-block-type bounding boxes, for slicing facade art across tiles
+let panelCollapsed = false; // right info panel hidden -> board uses full width
+const PANEL_W = 340;
 let testMode = false; // captured once at game start; the setup-screen checkbox is gone once play begins
 let timerHandle = null;
 let timerDeadline = null;
@@ -63,19 +65,23 @@ function renderSetup() {
   }).join("");
 
   root.innerHTML = `
-    <h1>Cat Board Game — Vertical Slice</h1>
-    <p class="note">Board movement, proximity, PvP battles, alliances, NPC locations/hazards, property cards, and the Coin economy.</p>
-    <div class="setup">
-      <label>Players (2-5):</label>
-      <div id="playerRows">${rows}</div>
-      <div>
-        <button id="addPlayerBtn" ${setupPlayerCount >= 5 ? "disabled" : ""}>+ Add player</button>
-        <button id="removePlayerBtn" ${setupPlayerCount <= 2 ? "disabled" : ""}>- Remove player</button>
+    <button id="fsBtn">⛶ Fullscreen</button>
+    <div class="setupWrap"><div>
+      <h1>Cat Board Game — Vertical Slice</h1>
+      <p class="note">Board movement, proximity, PvP battles, alliances, NPC locations/hazards, property cards, and the Coin economy.</p>
+      <div class="setup">
+        <label>Players (2-5):</label>
+        <div id="playerRows">${rows}</div>
+        <div>
+          <button id="addPlayerBtn" ${setupPlayerCount >= 5 ? "disabled" : ""}>+ Add player</button>
+          <button id="removePlayerBtn" ${setupPlayerCount <= 2 ? "disabled" : ""}>- Remove player</button>
+        </div>
+        <label><input type="checkbox" id="testModeToggle"> Fast test mode (3s timers instead of 20s/30s)</label>
+        <button id="startBtn">Start Game</button>
       </div>
-      <label><input type="checkbox" id="testModeToggle"> Fast test mode (3s timers instead of 20s/30s)</label>
-      <button id="startBtn">Start Game</button>
-    </div>
+    </div></div>
   `;
+  wireChromeButtons();
   document.getElementById("addPlayerBtn").addEventListener("click", () => {
     setupPlayerCount = Math.min(5, setupPlayerCount + 1);
     renderSetup();
@@ -100,10 +106,17 @@ function renderSetup() {
   });
 }
 
+function boardCellPx(size) {
+  // Largest square board that fits beside the info panel and within the viewport height.
+  const panel = panelCollapsed ? 0 : PANEL_W;
+  const avail = Math.min(window.innerWidth - panel - 28, window.innerHeight - 24);
+  return Math.max(14, Math.floor(avail / size));
+}
+
 function renderBoard() {
   const b = game.board;
-  const cellPx = 32;
-  let html = `<div class="board" style="grid-template-columns: repeat(${b.size}, ${cellPx}px);">`;
+  const cell = boardCellPx(b.size);
+  let html = `<div class="board" style="--cell:${cell}px; grid-template-columns: repeat(${b.size}, var(--cell));">`;
   for (let r = 0; r < b.size; r++) {
     for (let c = 0; c < b.size; c++) {
       const tile = b.tiles[r][c];
@@ -344,9 +357,11 @@ function battlePanel(battle) {
 function render() {
   clearTimer();
   root.innerHTML = `
+    <button id="fsBtn">⛶ Fullscreen</button>
+    <button id="panelBtn">${panelCollapsed ? "☰ Show panel" : "✕ Hide panel"}</button>
     <div class="layout">
       <div class="left">${renderBoard()}</div>
-      <div class="right">
+      <div class="right${panelCollapsed ? " collapsed" : ""}">
         ${renderPlayers()}
         ${renderControls()}
         ${renderLog()}
@@ -354,7 +369,35 @@ function render() {
     </div>
   `;
   wireEvents();
+  wireChromeButtons();
 }
+
+function wireChromeButtons() {
+  const fs = document.getElementById("fsBtn");
+  if (fs) {
+    fs.textContent = document.fullscreenElement ? "⛶ Exit fullscreen" : "⛶ Fullscreen";
+    fs.addEventListener("click", () => {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen?.();
+    });
+  }
+  const pb = document.getElementById("panelBtn");
+  if (pb) {
+    pb.addEventListener("click", () => {
+      panelCollapsed = !panelCollapsed;
+      if (game) render(); else renderSetup();
+    });
+  }
+}
+
+// Re-fit the board to the window on resize / fullscreen toggle (debounced).
+let _resizeT;
+function onViewportChange() {
+  clearTimeout(_resizeT);
+  _resizeT = setTimeout(() => { if (game) render(); }, 120);
+}
+window.addEventListener("resize", onViewportChange);
+document.addEventListener("fullscreenchange", onViewportChange);
 
 function wireEvents() {
   const g = game;
