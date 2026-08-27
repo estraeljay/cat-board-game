@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>16. Real-Money Purchase / Monetization Rules — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-5" style="--phase-color:var(--blue);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>16</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 5 — Collection & Monetization</span>
+      <span class="stamp">Nearly locked · 1 open</span>
+    </div>
+    <h1>16. Real-Money Purchase / Monetization Rules</h1>
+    <div class="subline">Full purchasable scope confirmed — only Booster Pack contents/pricing remain (deferred)</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">The boundaries of monetization need to be defined before any commercial assets are created.</p>
+    <ul class="locked-list">
+      <li>✓ <b>Gems</b> are the premium currency — primarily purchased with real money, but a <b>small amount can also be earned</b> through in-game bonuses and event-related rewards (revised from an earlier "no free-to-play earn path" decision). Gems can be spent to buy <b>Fel</b> (the persistent soft currency) directly.</li>
+      <li>✓ <b>Properties are purchased with Gems</b> — this is the "real-money purchase" mechanism referenced in Section 09, mediated through the premium currency rather than a direct real-money transaction.</li>
+      <li>✓ <b>Booster Packs</b> are sold in the in-game Market, purchasable with Gems. (Contents/rarity odds not yet defined — connects to Section 17, Card Rarity &amp; Collection System.)</li>
+      <li>✓ Properties remain a real-money purchase (locked in Section 09), exclusive to Prized Games (Section 22).</li>
+      <li>✓ Property leveling costs Fel, not Gems directly — but since Gems buy Fel, real money still indirectly accelerates property progression. See Section 11 for the cost table.</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Direction already implied</span>
+      The equipment system already points toward a strong answer: <b>purchased equipment should not automatically translate into permanent combat superiority.</b>
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Additional real-money purchases:</b> Yes — cosmetic cats, board themes, and other cosmetics are all purchasable, alongside properties/Gems/Booster Packs.</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Booster Pack contents and Gem price — how many cards, what rarity odds, how much does a pack cost?</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="15-player-elimination-and-persistent-assets.html"><span class="dir">← Previous</span><span class="t">Player Elimination &amp; Persistent Assets</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="17-card-rarity-and-collection-system.html"><span class="dir">Next →</span><span class="t">Card Rarity &amp; Collection System</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 16 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

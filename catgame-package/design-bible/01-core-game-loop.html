@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01. Core Game Loop — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-1" style="--phase-color:var(--gold);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>01</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 1 — Core Rules</span>
+      <span class="stamp">Locked · 10/10 resolved</span>
+    </div>
+    <h1>1. Core Game Loop</h1>
+    <div class="subline">All 10 questions resolved — core loop is locked</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">The single most important system in the design, now fully resolved. Every other system's kickoff decisions can take their cues from the shape of a single turn.</p>
+    <ul class="locked-list">
+      <li>✓ Turn sequence: <b>Start Turn → Roll → Move full distance rolled → Resolve Landing Location → Check Proximity → Optional PvP → End Turn.</b></li>
+      <li>✓ Cards can only be used after landing, on the active player's own turn — never before rolling, and never reactively during another player's turn.</li>
+      <li>✓ Three separate card pools: <b>Property Deck</b> (drawn only by a visitor who stops on a property tile — the owner does not draw), <b>Equipment Set</b> (the player's own equipment cards), and <b>PvP Deck</b> (usable only inside a PvP battle).</li>
+      <li>✓ Passing through a property without stopping triggers nothing. (Poison and Paralysis — see Section 04/12 — are visit-triggered property card effects, requiring a full stop; they don't apply on pass-through. A separate pass-through-specific mechanic remains hypothetical/undefined.)</li>
+      <li>✓ Proximity check: after landing, the active player checks all squares at distance 0–1 (orthogonal + diagonal, i.e. king-move adjacency, including the landed-on tile itself) for other players. For each player found, the active player gets a 3-option menu: <b>Initiate PvP</b>, <b>Do Nothing</b>, or <b>Propose Alliance</b>.</li>
+      <li>✓ Proposing an alliance sends an immediate accept/decline interrupt to the target player (not deferred to their own turn). If declined, the active player may still choose to initiate PvP against that player in the same turn.</li>
+      <li>✓ Landing on another player's tile does <b>not</b> auto-trigger PvP — it's always a choice from the 3-option menu, even at distance 0.</li>
+      <li>✓ Multiple players can occupy the same tile with no blocking. If PvP is declined or unavailable, they're simply shown coexisting on that tile.</li>
+      <li>✓ Win condition: king-of-the-hill style — the game ends when one player, or one allied group of players, is the last remaining on the board.</li>
+      <li>✓ <b>Turn timer:</b> each normal turn has a <b>20-second limit</b>. If the active player hasn't acted (rolled) in that time, the turn is <b>auto-skipped entirely</b> — no roll, no move, nothing happens, and play passes to the next player. PvP battles use their own <b>30-second-per-turn limit</b> instead (revised from an earlier 20-second placeholder) — full detail in Section 05 (PvP Turn Structure).</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Amendment — unification pass 2026-08-28</span>
+      Two mechanics were promoted to canon from the validated prototype (authoritative detail in <code>MASTER-DATA-SHEET.md</code> §2):
+      <b>(1) a conditional 4th proximity option, "Heal"</b> — shown only when the chosen target is Poisoned <em>and</em> a current ally; cures their Poison, ends the turn, free, not class-locked.
+      <b>(2) an opening grace period</b> — during each player's own first 2 turns they can neither act on nor be targeted by the proximity menu.
+      The proximity check also now resolves as: pick one target in range, then see the menu for that target.
+    </div>
+
+    <div class="note">
+      <span class="tag">New system flagged</span>
+      The win condition introduces <b>alliances/teams</b> as a formal mechanic — not previously defined anywhere in the design bible. This needs a dedicated pass when we reach Section 14 (Victory Condition), and will also touch Section 15 (Elimination) and Section 18 (Multiplayer Rules).
+    </div>
+
+    <div class="note">
+      <span class="tag">Belongs elsewhere when reached</span>
+      Two numbers decided in this session need a home in sections not yet started: <b>maximum 5 players per game</b> (Section 18, Multiplayer Rules) and the <b>20-second PvP action timer</b> (Section 05, PvP Turn Structure).
+    </div>
+
+    <div class="note">
+      <span class="tag">Why this came first</span>
+      Board structure, the character system, HP math, and PvP timing all take their cues from the shape of a single turn. Locking this first prevents rework across every other system.
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <p class="locked-intro">All 10 questions from this section are answered. Click a checkmark to flag one for revisiting if something downstream changes it.</p>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Turn sequence:</b> Start Turn → Roll → Move full rolled distance → Resolve Landing Location → Check Proximity → Optional PvP → End Turn. Each turn has a 20-second limit; if the player hasn't rolled in time, the turn is auto-skipped entirely.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Cards before rolling:</b> Not allowed. Cards can only be used after landing.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Cards after movement:</b> Yes — this is the only window in which cards can be played.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Cards during another player's turn:</b> Not allowed, ever — no reactive plays, not even Guard cards. Reactive PvP timing will need its own resolution in Section 05.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>PvP trigger:</b> After landing, for each player found within distance 0–1 (8-directional adjacency, including the landed-on tile), the active player gets a 3-option menu: Initiate PvP, Do Nothing, or Propose Alliance. Alliance proposals interrupt the target player immediately for accept/decline; if declined, the active player may still initiate PvP that turn.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Auto-initiate on landing:</b> No — the 3-option menu is always a choice, even when landing directly on another player.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Choosing a target:</b> Yes — the active player picks exactly one target from all players in range.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Passing through a property:</b> No trigger. Poison/Paralysis (Section 04/12) are visit-only card effects, not pass-through effects.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Multiple players on one tile:</b> Allowed, no blocking. Falls under the optional PvP rule; if declined, players simply coexist on the tile.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Win condition:</b> King-of-the-hill — last remaining player, or last remaining allied group, wins. (Introduces a new alliance/team mechanic — see note above. Full detail deferred to Section 14.)</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="index.html"><span class="dir">← Previous</span><span class="t">Index</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="02-board-structure.html"><span class="dir">Next →</span><span class="t">Board Structure</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 01 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

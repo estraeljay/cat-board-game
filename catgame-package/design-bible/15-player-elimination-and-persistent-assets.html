@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>15. Player Elimination &amp; Persistent Assets — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-6" style="--phase-color:var(--green);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>15</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 6 — Multiplayer & Lifecycle</span>
+      <span class="stamp">Locked · 7/7 resolved</span>
+    </div>
+    <h1>15. Player Elimination &amp; Persistent Assets</h1>
+    <div class="subline">All 7 questions resolved</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">Resolved by splitting assets into two categories: permanent (real-money) ownership, which is always protected, and in-match earnings, which are won and lost through PvP.</p>
+    <ul class="locked-list">
+      <li>✓ Permanently-owned, real-money properties and equipment are <b>protected</b> — they are never transferred, seized, or put at risk through PvP, regardless of elimination.</li>
+      <li>✓ The only thing that transfers on elimination is <b>80%</b> of the eliminated player's accumulated <b>in-match Coins</b> (revised from an earlier 90/10 split) — these go to the PvP winner. The eliminated player retains the remaining <b>20%</b>. This split happens at the moment of each individual elimination. Coins are a real, individually-tracked personal reward (not purely cosmetic) but are never pooled between players even in a shared win — see Section 14.</li>
+      <li>✓ For cards — including a <b>Prize Card</b>, if the eliminated player is holding one — the PvP winner instead <b>selects which and how many cards they want</b> to take from the eliminated player's collection, and returns the rest. This is the mechanism by which Prize Cards actually change hands: a winner will almost always take a Prize Card if the loser is holding one, since it represents the core win reward (see Section 14).</li>
+      <li>✓ Equipment and property <i>levels</i> are already match-scoped by design (per Section 07/21 — permanent ownership, temporary match-level power) and simply stop mattering once a player is eliminated; they are not treated as a separate transferable reward.</li>
+      <li>✓ A protected property remains placed on the board after its owner is eliminated but becomes <b>inactive</b> for the rest of that game instance: no property card triggers for visitors, no effects for the (now absent) owner.</li>
+      <li>✓ Protected properties do <b>not</b> become available to other players, do not get auctioned, and are not NPC-controlled — ownership is untouched, since it was never actually at stake.</li>
+      <li>✓ There's no "return to inventory" step, since permanent ownership never left the player's account in the first place.</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">New mechanics that feed this</span>
+      Two things decided elsewhere now connect here: PvP battles can end in an accepted <b>withdrawal</b> (no winner, no elimination, no transfer) — this needs its own write-up in Section 05 (PvP Turn Structure). And an accepted withdrawal opens the door for either player to propose an <b>alliance</b>, optionally with a negotiated offer attached — see Section 14.
+    </div>
+
+    <div class="note">
+      <span class="tag">Reward system overhaul</span>
+      The game's core reward economy is now built around exactly <b>3 Prize Cards</b> per game instance, seeded into eligible property card decks at game start (see Section 14 for the full system). <b>Dungeons are cut entirely from scope</b> (formerly Section 13) — this system replaces what dungeon rewards would have provided, so no dungeon-sourced cards exist to reconcile.
+    </div>
+
+    <div class="note">
+      <span class="tag">Worked example</span>
+      Player A owns three real-money properties and gets eliminated. What happens to those properties?
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Remain owned but become inactive?</b> Yes — ownership is untouched (it was never at stake), but the property is inactive on the board for the rest of that game instance.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Remain on the board?</b> Yes, still placed — just inactive.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Become available for other players?</b> No — permanent ownership is protected.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Return to the owner's inventory?</b> N/A — it never left; permanent ownership was never in question.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Continue generating property effects?</b> No — inactive for the rest of the instance.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Become NPC-controlled?</b> No.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Get auctioned?</b> No.</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="14-game-victory-condition.html"><span class="dir">← Previous</span><span class="t">Game Victory Condition</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="16-real-money-purchase-monetization-rules.html"><span class="dir">Next →</span><span class="t">Real-Money Purchase / Monetization Rules</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 15 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

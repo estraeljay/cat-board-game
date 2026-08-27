@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>07. Equipment System — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-2" style="--phase-color:var(--rose);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>07</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 2 — PvP Systems</span>
+      <span class="stamp">14/17 resolved</span>
+    </div>
+    <h1>7. Equipment System</h1>
+    <div class="subline">Nearly fully resolved — 3 open questions remain, all deferred rewards/assets</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">"Temporary match-level power" is now a concrete system: every equipped item resets to Level 1 at the start of each match and levels back up through play, primarily via the Blacksmith.</p>
+    <ul class="locked-list">
+      <li>Eight equipment slots: Ring, Necklace, Boots, Gloves, Body Armor, Helmet, Weapon, Shield.</li>
+      <li>Core principle: permanent ownership, temporary match-level power.</li>
+      <li>✓ <b>Stat mapping</b> (locked in Section 04): Weapon, Gloves, Ring → Attack; Shield, Body Armor, Boots → Defense; Helmet, Necklace → HP.</li>
+      <li>✓ <b>Starting level:</b> Always Level 1 at the start of every match — fully fresh each game, no carryover advantage from the item's permanent rarity/quality.</li>
+      <li>✓ <b>Slots level independently</b> — each of the 8 slots tracks its own level number.</li>
+      <li>✓ <b>Leveling sources:</b> primarily <b>Blacksmith</b> (a special board location, Section 02) — one visit, <b>for a Coin cost</b>, levels up <b>all 8 slots by +1 at once</b> (proposed default, open to adjustment). Property card draws can also grant equipment levels as one of several possible effects (alongside Coins and Prize Cards).</li>
+      <li>✓ <b>Maximum level per match:</b> proposed <b>3-5</b>, sized to be realistically reachable within a single ~20-40 min match given Blacksmith is one shared location among up to 5 players (needs real playtesting to confirm the exact ceiling).</li>
+      <li>✓ Exact Attack/Defense/HP contribution per level is deferred to when the actual equipment card assets are designed (same treatment as combat card values in Section 04).</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Proposed, not fully confirmed</span>
+      Two specific numbers above (all 8 slots leveling together per Blacksmith visit, and the 3-5 max level range) are reasonable defaults rather than firm decisions — flag if you want them changed.
+    </div>
+
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Starting equipment level:</b> Always Level 1 at match start.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Maximum launch level:</b> Proposed 3-5 per match (needs playtesting).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>How each equipment type levels up:</b> Primarily Blacksmith visits, plus property card draws as a secondary source.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Equipment XP vs. visit/action milestones:</b> Visit-based (Blacksmith visits), not a separate XP pool.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether equipment levels independently:</b> Yes, each of the 8 slots tracks its own level.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Attack/Defense contribution per level:</b> Mapping locked (Section 04); exact magnitude deferred to asset creation.</span></li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Equipment acquisition:</b> Multiple paths — Booster Packs (Gems) plus other sources like Campaign rewards and events.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Equipment swapping:</b> Yes, between matches — players choose their loadout from owned equipment before each match starts, then it's locked for that match (same pattern as property placement).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether equipment can be changed during a match:</b> No — loadout is locked once a match starts, same treatment as property placement.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether equipment can be traded:</b> Yes, similar to properties.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether equipment can be sold:</b> Yes, similar to properties.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether equipment has durability:</b> No — doesn't degrade or break; only the temporary match-level resets each game.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>How property effects interact with maximum level:</b> Bounded by it — both positive and negative property effects are capped at the match's max level (3-5), never exceeding it.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Floor at Level 1:</b> Hard floor — negative property card effects cannot push equipment level below 1.</span></li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions <span style="font-weight:400;">(deferred — rewards/assets, tackled last per your ordering)</span></h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Level-up animation / reward</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Equipment rarity (connects to Section 17, Card Rarity &amp; Collection System)</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Equipment collection screen</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="06-the-20-card-deck-rules.html"><span class="dir">← Previous</span><span class="t">The 20-Card Deck Rules</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="08-equipment-progression-balance.html"><span class="dir">Next →</span><span class="t">Equipment Progression Balance</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 07 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

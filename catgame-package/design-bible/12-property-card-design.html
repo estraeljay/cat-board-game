@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12. Property Card Design — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-3" style="--phase-color:var(--teal);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>12</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 3 — Properties</span>
+      <span class="stamp">4/14 resolved</span>
+    </div>
+    <h1>12. Property Card Design</h1>
+    <div class="subline">Coin/equipment/HP/movement effects confirmed possible — 10 open questions remain</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">Card mechanics need to be established before any property deck is illustrated. Several effect types are now confirmed possible, even though the deck's full contents aren't designed yet.</p>
+    <ul class="locked-list">
+      <li>✓ Property cards can grant <b>Coins</b> (amount depends on the specific card drawn) — locked in Section 10.</li>
+      <li>✓ Property cards can grant <b>Prize Cards</b> — 3 total exist per game instance, seeded into eligible property decks at game start — locked in Section 14/15.</li>
+      <li>✓ Property cards can grant <b>equipment levels</b>, as one of several possible effects — locked in Section 07/08.</li>
+      <li>✓ Property cards can also inflict <b>negative status effects</b>: <b>Poison</b> (1 HP loss per tile moved) and <b>Paralysis</b> (movement capped at 2 for 5 turns) — both curable only by visiting the Church (Section 02/04).</li>
+      <li>✓ This answers "whether cards modify equipment," "whether cards modify coins," "whether cards modify HP," and "whether cards modify movement" from the list below — all: yes.</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Worked example — Fish Market</span>
+      Sample cards: Salmon, Tuna, Purchase Discount, Fresh Catch, Spoiled Fish, Fisherman's Luck.
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Number of cards in each property deck</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Duplicate cards allowed?</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Card rarity</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Draw probability</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Positive vs. negative effect ratio</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Whether effects target visitor, owner, or all players</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether cards modify HP:</b> Yes — negative cards can inflict <b>Poison</b> (1 HP loss per tile moved, cured only by the Church).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether cards modify movement:</b> Yes — negative cards can inflict <b>Paralysis</b> (movement capped at 2 tiles for 5 turns, curable early by the Church).</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Whether cards modify PvP</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Whether property cards are visible before triggering</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Whether the owner controls card selection</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Whether property decks scale with property level</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="11-property-leveling.html"><span class="dir">← Previous</span><span class="t">Property Leveling</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="13-dungeons.html"><span class="dir">Next →</span><span class="t">Dungeons</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 12 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

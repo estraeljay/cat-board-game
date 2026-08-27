@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>17. Card Rarity &amp; Collection System — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-5" style="--phase-color:var(--blue);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>17</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 5 — Collection & Monetization</span>
+      <span class="stamp">Awaiting decision</span>
+    </div>
+    <h1>17. Card Rarity &amp; Collection System</h1>
+    <div class="subline">9 open questions to resolve before assets are created</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">The overall collectible-card structure hasn't been established yet.</p>
+  </div>
+
+    <div class="note">
+      <span class="tag">Proposed tiers</span>
+      Common, Uncommon, Rare, Epic, Legendary, and optionally a Unique / Special tier.
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Can Attack cards have rarity?</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Can Guard cards have rarity?</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Can property cards have rarity?</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Are duplicate cards useful?</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Can cards be upgraded?</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Can cards be traded?</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Can cards be sold?</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Can players craft cards?</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Can players dismantle duplicates?</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="16-real-money-purchase-monetization-rules.html"><span class="dir">← Previous</span><span class="t">Real-Money Purchase / Monetization Rules</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="18-multiplayer-rules.html"><span class="dir">Next →</span><span class="t">Multiplayer Rules</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 17 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

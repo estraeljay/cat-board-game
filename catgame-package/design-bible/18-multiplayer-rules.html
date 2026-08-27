@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18. Multiplayer Rules — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-6" style="--phase-color:var(--green);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>18</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 6 — Multiplayer & Lifecycle</span>
+      <span class="stamp">Locked · 11/11 resolved</span>
+    </div>
+    <h1>18. Multiplayer Rules</h1>
+    <div class="subline">All questions resolved</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">Because properties can be used by other players in the same instance, we need the multiplayer model.</p>
+    <ul class="locked-list">
+      <li>✓ <b>Maximum players per board: 5</b> (decided alongside the alliance/betrayal system — kept small to help games resolve in reasonable time).</li>
+      <li>✓ <b>Turn timer: 20 seconds per normal turn.</b> If the active player hasn't rolled in that time, the turn is auto-skipped entirely — no roll, no move. PvP battles use their own <b>30-second-per-turn limit</b> instead (revised from an earlier 20-second placeholder, see Section 05). Full detail locked in Section 01 (Core Game Loop).</li>
+      <li>✓ <b>AFK/disconnect/reconnection system:</b> 20s idle → warning shown → if still unresponsive, an <b>AI bot takes over for up to 5 of that player's own turns</b> (a reconnection grace period) → if the human hasn't returned by turn 6, <b>automatic elimination</b> with no rewards and no Fel refund. Disconnects are handled identically to idling.</li>
+      <li>✓ <b>AI-controlled character during the grace period is treated as a normal active player</b> — confirmed. Ordinary PvP elimination/asset-transfer rules (Section 15) still apply — another player can defeat the bot-controlled character via PvP before the 5-turn grace period even expires, resolving the disconnect through the normal elimination path instead.</li>
+      <li>✓ <b>"5 turns" confirmed as 5 of the AFK player's own turns</b> — not 5 turns of the overall game rotation.</li>
+      <li>✓ <b>Bot difficulty:</b> the AI plays as a <b>mid-tier player</b> — competent enough to not completely break game flow, but deliberately <b>easy for real players to eliminate</b> if they choose to target it. It's a soft target, not a wall.</li>
+    </ul>
+  </div>
+
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Private vs. public games:</b> Both supported — public matchmaking for random players, plus private invite-only lobbies.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Friends / invite system:</b> Exists, used for private lobbies.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Matchmaking:</b> Fully random — every player starts a match mechanically equal (equipment resets to Level 1, no persistent stat advantage), so skill-based pairing isn't needed.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Spectators:</b> Eliminated players can spectate the rest of the match. Non-participants cannot.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Reconnection:</b> Possible during the 5-turn AI grace period (see AFK handling) — a returning player resumes control from the AI. Once the grace period expires, elimination is final and reconnection is no longer possible.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Player disconnect:</b> Treated identically to AFK — same 20s-idle → warning → AI takeover → 5-turn grace → elimination flow applies whether the player is idle or actually disconnected.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>AFK handling:</b> A player has 20 seconds to act each turn (Section 01). If that elapses, an <b>idle warning</b> is shown. If the player is still unresponsive on their next turn, an <b>AI bot takes over their character for up to 5 of their own turns</b> — a grace period during which the human can reconnect and resume control at any point. If the player hasn't returned by the start of their 6th turn under AI control, they are <b>automatically eliminated</b>: no rewards, and their Fel entry fee is <b>not refunded</b>.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Host leaving:</b> No special handling needed — already fully covered by the AFK/disconnect system above, which applies identically regardless of role.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Game pause:</b> Any player can propose a pause (takes effect without requiring others' agreement — protects a player who needs to step away). To <b>resume</b>, all players must be confirmed present; a recall notification is sent to prompt absent players back.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Game expiration:</b> Scales with the match's entry-fee stake tier (see Section 22 for the new variable-fee system) — 100-500 Fel games expire after <b>48 hours</b>, 501-1,000 Fel games after <b>96 hours</b>, 1,001-2,000+ Fel games after <b>1 week</b>. Higher stakes get more time before an abandoned/incomplete match is cleaned up.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Synchronization rules:</b> Handled at the design level by the idle timer — every player is required to stay active or be handled via the AFK/AI-takeover system, so the match itself never needs to "wait" indefinitely. (Note: the underlying technical sync architecture — server-authoritative state vs. lockstep, etc. — is an implementation decision, not really a design-bible question, and can be deferred to whoever builds the networking layer.)</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="17-card-rarity-and-collection-system.html"><span class="dir">← Previous</span><span class="t">Card Rarity &amp; Collection System</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="19-game-instance-lifecycle.html"><span class="dir">Next →</span><span class="t">Game Instance Lifecycle</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 18 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

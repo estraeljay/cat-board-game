@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>14. Game Victory Condition — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-1" style="--phase-color:var(--gold);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>14</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 1 — Core Rules</span>
+      <span class="stamp">Locked · all questions resolved</span>
+    </div>
+    <h1>14. Game Victory Condition</h1>
+    <div class="subline">Win condition, alliances, Prize Cards, and reward splits fully resolved</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">The win condition is now defined: king-of-the-hill style, last player or last allied group standing.</p>
+    <ul class="locked-list">
+      <li>✓ Losing is defined: reaching 0 HP eliminates a player from the board-game instance.</li>
+      <li>✓ Win condition: a player wins when they are the last one remaining, <b>or</b> when they're part of the last remaining allied group.</li>
+      <li>✓ Alliances are now a <b>formal, system-tracked mechanic</b> (superseding an earlier "informal, untracked" decision from this session). Formed via the proximity menu introduced in Section 01: the active player selects "Propose Alliance," the target player gets an immediate accept/decline prompt, and it only takes effect if both agree.</li>
+      <li>✓ Alliances can also be proposed after an accepted PvP withdrawal (see below) — either player, not just the one who was active that turn, may propose it. This lets players "test" an opponent's strength in battle before deciding whether to ally.</li>
+      <li>✓ An alliance proposal can include a negotiated offer to sweeten the deal (e.g. the proposer offers something in exchange). Exact offer scope (coins only vs. cards vs. anything held) is still an open sub-question — see below.</li>
+      <li>✓ An alliance is a status label only — it has <b>zero mechanical restriction</b>. PvP is always available against an ally, and betrayal has no extra step, cooldown, or penalty. Its purpose is purely to give the game state a definitive record of who's allied, for determining shared victory at game end.</li>
+      <li>✓ A shared win occurs when two or more tracked-allied players are the last ones remaining on the board.</li>
+      <li>✓ <b>Maximum alliance size is 3 players</b> (revised down from an earlier 5-player decision — kept tighter to help games resolve faster).</li>
+      <li>✓ <b>Maximum of 2 players can share victory</b> — this is a hard rule, not a suggestion. If 3 allied players are the last ones standing, the game does <b>not</b> force a resolution (no automatic sudden-death). It's on the players themselves: they must initiate PvP against each other and betray down to 2 before a winner can be declared. A 3-player alliance mathematically cannot all win — betrayal within it is inevitable by design.</li>
+      <li>✓ <b>Reward structure:</b> the game's primary/decisive win economy is exactly <b>3 Prize Cards</b> per game instance. Coins collected throughout the game are a <b>secondary personal reward</b> — real, but never pooled or split; see below. Dungeons are <b>cut entirely</b> from scope (formerly Section 13) — this system replaces what dungeon rewards would have provided.</li>
+      <li>✓ Prize Card placement: each property has a chance to contain one, but only <b>3 total ever get activated</b> — seeded into 3 property decks at the start of each game instance. This gives "unique"/rarer properties real prestige: owning one that's likely to hold a Prize Card makes it a desirable place for other players to visit.</li>
+      <li>✓ Holding a Prize Card at the moment the game ends means that player personally claims its full payout — <b>this bypasses the shared-win split entirely</b>. Even in a 2-player shared victory, Prize Cards are never divided evenly; whoever is physically holding each one keeps it.</li>
+      <li>✓ Prize Cards can be stolen through ordinary PvP — no new mechanic needed. The existing "winner selects which/how many cards to take" rule (Section 15) already covers seizing a Prize Card from an eliminated opponent — including if the eliminated player is holding one, it transfers to the winner. This is the real engine behind forced betrayal: an ally who found a Prize Card has no reason to hand it over, and if they're still holding it when a shared win happens, they keep the entire prize. Turning on your own ally to take it is often the only way to get it.</li>
+      <li>✓ <b>Coins are never pooled or split, in any win scenario.</b> Each player simply keeps whatever coins they personally collected throughout the game — a shared/allied win does <b>not</b> combine or divide coin totals between teammates. This is deliberate: it adds a second, independent source of greed-driven betrayal on top of the Prize Cards. An ally who's out-collected you has no obligation to share, and you have no way to force it except PvP.</li>
+      <li>✓ Reward split for a shared (2-player) win, <b>for non-Prize-Card, non-coin rewards only</b> (e.g. any leftover non-quantifiable items): the player with the <b>most individual PvP wins</b> during the match picks first; the other takes what's left.</li>
+      <li>✓ PvP battles can end via an accepted <b>withdrawal</b>: either player may propose withdrawing, the opponent can accept or deny it, and only one withdrawal attempt is allowed per battle (if denied, the battle continues to its normal conclusion). A withdrawal has no penalty for the requester, and ends the battle with no winner, no elimination, and no asset transfer. Full turn-by-turn mechanics belong in Section 05 (PvP Turn Structure).</li>
+      <li>✓ On elimination (0 HP within a PvP battle), the winner takes <b>80%</b> of the loser's accumulated in-match Coins (revised from an earlier 90/10 split); the loser keeps <b>20%</b>. For cards — including a Prize Card, if the loser is holding one — the winner picks which/how many they want and returns the rest. This happens at the moment of each individual elimination. Permanently-owned real-money properties/equipment are always protected — see Section 15 for the full breakdown.</li>
+      <li>✓ <b>Note:</b> this replaces the shared/pooled coin-economy framing originally assumed for Sections 09–12 (Property System/Economy/Leveling/Card Design) — coins are still a real, individually-tracked reward (not purely cosmetic), but they're personal and never pooled between players, and Prize Cards — not coins — are the decisive win condition. Those sections need revisiting when reached.</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Sequencing</span>
+      This should be settled before the overall UI and board assets are finalized.
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Being the last surviving player:</b> Yes — this, or being part of the last remaining allied group, is the win condition.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Completing a quest:</b> No — not part of the win condition.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Reaching a certain number of points:</b> No.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Owning specific properties:</b> No.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Defeating a boss:</b> No.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Collecting objectives:</b> No.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Accumulating coins:</b> No.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Reaching the finish space:</b> No — there's no finish line; the board loop is open-ended until one player or allied group remains.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Some combination of the above:</b> No — it's a single, clean win condition, not a hybrid.</span></li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Alliance offer scope:</b> Coins and reward cards (property-type cards earned during play) — not the core PvP Attack/Guard deck.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Prize Card visibility:</b> Visible — everyone can see who's holding a Prize Card at all times. Betrayal targets are informed, not speculative, which sharpens the tension deliberately.</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="13-dungeons.html"><span class="dir">← Previous</span><span class="t">Dungeons (cut)</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="15-player-elimination-and-persistent-assets.html"><span class="dir">Next →</span><span class="t">Player Elimination &amp; Persistent Assets</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 14 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

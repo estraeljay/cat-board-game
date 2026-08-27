@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04. HP and Combat Mathematics — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-1" style="--phase-color:var(--gold);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>04</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 1 — Core Rules</span>
+      <span class="stamp">15/18 resolved · 3 deferred to assets</span>
+    </div>
+    <h1>4. HP and Combat Mathematics</h1>
+    <div class="subline">Core formula locked — 3 small open questions remain (crits, damage cap, multi-Guard)</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">Combat math is now defined around a single formula with a guaranteed-progress floor, built for a multi-round card battle (see Section 05 for the full turn structure).</p>
+    <ul class="locked-list">
+      <li>0 HP = eliminated from the entire board-game instance.</li>
+      <li>✓ <b>Base HP is 100</b>, modified only by equipment — there is no separate character/cat level system. Equipment slot → stat mapping: Weapon, Gloves, Ring → Attack; Shield, Body Armor, <b>Boots</b> → Defense; Helmet, Necklace → HP. All 8 slots are combat-relevant (revised — Boots was originally movement-flavored/non-combat, now folded into Defense). Exact per-level magnitude is deferred to when the actual equipment cards are designed.</li>
+      <li>✓ <b>Damage formula:</b> <code>Damage = max(1, (Attacker's Attack stat + Attack card bonus) − Defender's Defense stat − Guard card block value)</code>. The <code>max(1, ...)</code> floor guarantees at least 1 damage always gets through on a resolved attack — this is what makes "neither player can meaningfully damage the other" mathematically impossible, resolving that open question directly.</li>
+      <li>✓ <b>No counterattacks, no simultaneous damage:</b> only the attacking player (per their turn — see Section 05) deals damage in an exchange. A Guard card purely blocks; it never deals damage back. Roles (attacker/defender) alternate turn-by-turn instead of both players attacking at once.</li>
+      <li>✓ <b>Turn order:</b> the player who initiated the PvP battle (via the proximity menu in Section 01) goes first as attacker. Turns then alternate between the two players — see Section 05 for the full phase structure.</li>
+      <li>✓ <b>Battle duration:</b> multi-round, no hard cap on number of rounds. A battle ends when a player reaches 0 HP, or when a proposed withdrawal is accepted (either player may propose withdrawal at any point mid-battle — only one attempt allowed per battle, per Section 14).</li>
+      <li>✓ <b>Healing:</b> the Inn (one of the 3 special board locations from Section 02) heals HP <b>for a Coin cost</b> (amount deferred alongside other numeric balance items).</li>
+      <li>✓ <b>Poison status effect:</b> deals <b>1 HP damage per tile moved</b> while active (a 5-tile move costs 5 HP). Inflicted by negative property card effects (Section 12). Persists until cured — no stated natural expiration, only removable by visiting the Church (Section 02), <b>for a Coin cost</b>.</li>
+      <li>✓ <b>Paralysis status effect:</b> caps movement to <b>2 tiles regardless of dice roll</b>, lasting <b>5 turns</b>. Inflicted by negative property card effects (Section 12). Expires naturally after 5 turns, or early via the Church <b>for a Coin cost</b>.</li>
+      <li>✓ <b>Armor/Shield interaction:</b> resolved through the general Defense stat in the formula above — no separate special-case mechanic beyond that (e.g. no "shield blocks one full hit").</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Amendment — unification pass 2026-08-28</span>
+      Authoritative detail in <code>MASTER-DATA-SHEET.md</code> §5.
+      <b>Poison</b> now also comes from <b>Poison Swamp</b> board tiles (Section 02), not only property cards, and can now be cured either at the Church (Coin cost) <em>or</em> by an allied player's free <b>Heal</b> proximity action (Section 01). The per-tile bleed is the entire effect — there is no separate "hit on entry."
+      New lighter effect <b>Snared</b> (from Thorn Vines tiles): next roll only, even → normal, odd → move 1; kept distinct from Paralysis.
+      Unrelated: the cat <b>class roster is locked at exactly 3</b> (Knight/Mage/Priest); the 3 per-class special abilities are still undesigned.
+    </div>
+
+    <div class="note">
+      <span class="tag">Still open</span>
+      Three things remain undecided: whether <b>critical hits</b> exist at all, whether there's a <b>damage maximum/cap</b> (a minimum floor of 1 is locked, but no ceiling), and how a single Guard card interacts if an opponent's Attack could theoretically be countered more than once (current assumption: one Guard card per incoming Attack, no stacking — but this wasn't explicitly confirmed).
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Starting/Maximum HP:</b> Base 100, modified by equipped gear (no cap defined beyond whatever total equipment can add).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Attack calculation:</b> Attack stat (from Weapon/Gloves/Ring) + Attack card's printed bonus.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Defense calculation:</b> Defense stat (from Shield/Body Armor) + Guard card's printed block value, both subtracted from incoming damage.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Equipment contribution:</b> See the slot → stat mapping above.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Attack card contribution:</b> A printed bonus value added to the Attack stat.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Guard card contribution:</b> A printed flat block value subtracted from incoming damage.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Damage minimum:</b> 1 (guaranteed floor, see formula above). No maximum defined yet.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Healing:</b> The Inn special location heals HP (amount TBD).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Damage reduction / Armor / Shield interaction:</b> All handled through the Defense stat in the general formula — no separate mechanic.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Counterattacks:</b> None — Guard purely blocks, never deals damage back.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Simultaneous damage:</b> Doesn't occur — only the active attacker of a given turn deals damage; roles alternate instead.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Turn order:</b> PvP initiator attacks first, then turns alternate.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Battle duration:</b> Multi-round, no hard cap — ends at 0 HP or an accepted withdrawal.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>What happens if neither player can meaningfully damage the other:</b> Can't happen — the damage floor of 1 guarantees progress every resolved attack.</span></li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions <span style="font-weight:400;">(deferred to asset creation)</span></h2>
+    <p class="locked-intro">Not blocking further design work — these get decided when the actual card/equipment assets are built, same treatment as the equipment level-up magnitudes.</p>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Do critical hits exist at all?</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Is there a damage maximum/cap, or is damage uncapped above the floor of 1?</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Can more than one Guard card be played against a single incoming Attack, or is it strictly one-for-one?</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="03-player-character-system.html"><span class="dir">← Previous</span><span class="t">Player Character System</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="05-pvp-turn-structure.html"><span class="dir">Next →</span><span class="t">PvP Turn Structure</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 04 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# Node (if any tooling is added later)
+node_modules/
+npm-debug.log*
+
+# Stale generated artifact — the real content is in catgame-package/
+catgame-package.zip
+
+# Local backups
+backup_pre_unify_*/
+
+# Claude Code local overrides (keep .claude/skills and .claude/launch.json)
+.claude/settings.local.json
+
+# --- Unity (for when unity-port/ becomes a real project) ---
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]serSettings/
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.user
+*.booproj
+*.pidb
+*.suo
+*.apk
+*.aab
+*.unitypackage
+crashlytics-build.properties

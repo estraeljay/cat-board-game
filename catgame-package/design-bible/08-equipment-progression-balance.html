@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>08. Equipment Progression Balance — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-5" style="--phase-color:var(--blue);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>08</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 5 — Collection & Monetization</span>
+      <span class="stamp">6/7 resolved</span>
+    </div>
+    <h1>8. Equipment Progression Balance</h1>
+    <div class="subline">PvP/property interactions locked — 1 open question remains (needs real playtesting)</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">One of the game's core anti-pay-to-win mechanisms, so it deserves its own design pass. Now resolved by the Blacksmith-driven leveling system locked in Section 07.</p>
+    <ul class="locked-list">
+      <li>Progression shape established as a template: Level 1 → 2 requires X actions, Level 2 → 3 requires Y actions, etc.</li>
+      <li>✓ <b>Leveling actions:</b> Blacksmith visits (primary — levels all 8 slots at once) and property card draws (secondary, one of several possible card effects).</li>
+      <li>✓ <b>Properties can accelerate progression:</b> Yes, via property card draws.</li>
+      <li>✓ <b>How frequently equipment can be affected:</b> Governed by visit frequency to Blacksmith and properties — not a separately throttled system on top of that.</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Before final assets</span>
+      Build a master equipment progression table before producing the final equipment card assets.
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Can PvP wins accelerate equipment progression?</b> No — strictly Blacksmith and property cards.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Can losing PvP reduce equipment level?</b> No — level never decreases from combat, only resets between matches (this also resolves Section 07's matching question).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Can properties damage equipment?</b> Yes — negative property card effects can reduce equipment level, not just accelerate it.</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">How quickly can a player realistically reach maximum level within one match? Depends on Blacksmith visit frequency shared among up to 5 players — needs real playtesting.</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="07-equipment-system.html"><span class="dir">← Previous</span><span class="t">Equipment System</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="09-property-system.html"><span class="dir">Next →</span><span class="t">Property System</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 08 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

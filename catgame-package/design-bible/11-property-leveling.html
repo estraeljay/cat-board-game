@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11. Property Leveling — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-3" style="--phase-color:var(--teal);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>11</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 3 — Properties</span>
+      <span class="stamp">Level cap locked · 1 open</span>
+    </div>
+    <h1>11. Property Leveling</h1>
+    <div class="subline">Level 5 confirmed as hard cap — only Coin thresholds remain (deferred, needs rent/card values first)</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">Revised again: the visit-count gate is dropped entirely in favor of a more organic metric — cumulative Coins the property itself has earned. Fel remains the cost.</p>
+    <table class="spec">
+      <thead><tr><th>Level transition</th><th>Coins earned by property (cumulative)</th><th>Fel cost</th></tr></thead>
+      <tbody>
+        <tr><td>Level 1 → 2</td><td>TBD — needs rebalancing</td><td>750 Fel</td></tr>
+        <tr><td>Level 2 → 3</td><td>TBD — needs rebalancing</td><td>1,750 Fel</td></tr>
+        <tr><td>Level 3 → 4</td><td>TBD — needs rebalancing</td><td>3,500 Fel</td></tr>
+        <tr><td>Level 4 → 5</td><td>TBD — needs rebalancing</td><td>6,000 Fel</td></tr>
+      </tbody>
+    </table>
+    <ul class="locked-list">
+      <li>✓ <b>Visits dropped as the gate</b> — replaced by cumulative Coins earned by the property (from rent + property card draws), tracked across every match it's been placed in, same cross-game cumulative logic the visit count used to have.</li>
+      <li>✓ Fel cost <b>stays fixed at the original numbers</b> (750/1,750/3,500/6,000), unaffected by variable stakes (Section 22). Fel is persistent and fungible — it doesn't matter which stake tier it was earned from, so no rebalancing is needed here. Only the <b>Coin threshold</b> column above still needs numbers, and that's for an unrelated reason (rent rates/property card values aren't designed yet).</li>
+      <li>✓ Both the Coin threshold and the Fel cost must be satisfied to level up.</li>
+      <li>✓ Property leveling is intentionally tied to Fel (which Gems can buy) rather than being fully disconnected from monetization — see Section 16.</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Needs a full rebalance pass</span>
+      The old visit thresholds (15/35/65/110) don't translate directly into Coin amounts — a property's Coin income depends on rent rate and card-draw frequency, neither of which has an exact number yet. This whole table's left column needs real numbers once rent amounts and property card effects are designed, plus playtesting to validate the pacing.
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Actual Coin thresholds per level — depends on rent rate and property card Coin rewards, neither designed yet.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Level cap:</b> Level 5 is a hard cap — no levels beyond it.</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="10-property-economy.html"><span class="dir">← Previous</span><span class="t">Property Economy</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="12-property-card-design.html"><span class="dir">Next →</span><span class="t">Property Card Design</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 11 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

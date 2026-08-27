@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>19. Game Instance Lifecycle — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-6" style="--phase-color:var(--green);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>19</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 6 — Multiplayer & Lifecycle</span>
+      <span class="stamp">Locked · 6/6 resolved</span>
+    </div>
+    <h1>19. Game Instance Lifecycle</h1>
+    <div class="subline">All questions resolved</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">The overall lifecycle of a game instance, start to finish.</p>
+    <ul class="locked-list">
+      <li>Create Game → Configure Board → Place Properties → Invite Players → Start → Play → Elimination → Victory → Results → End.</li>
+      <li>✓ Properties are placed at game setup, before play begins — each player places up to their max of 2 properties on blank interior tiles (locked in Sections 02 and 09). This answers "when can properties be placed" from the list below.</li>
+    </ul>
+  </div>
+
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Can players change property placement after seeing opponents?</b> No — final once placed, consistent with placement being locked in for the instance (Section 09).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Can players inspect the board before starting?</b> No — not visible until the match actually begins.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>When does the board become locked?</b> Once all players have placed their properties and confirmed ready.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Can players join after starting?</b> No — roster is fixed once the match starts.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Can eliminated players spectate?</b> Yes — resolved in Section 18 (Multiplayer Rules).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>When does the instance disappear?</b> Scales with the match's stake tier — 48h/96h/1 week, resolved in Section 18 (Game Expiration).</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="18-multiplayer-rules.html"><span class="dir">← Previous</span><span class="t">Multiplayer Rules</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="20-ui-ux-architecture.html"><span class="dir">Next →</span><span class="t">UI / UX Architecture</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 19 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

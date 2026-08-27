@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13. Dungeons — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-4" style="--phase-color:var(--violet);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>13</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 4 — Dungeons</span>
+      <span class="stamp">Cut from scope</span>
+    </div>
+    <h1>13. Dungeons <span style="font-weight:400;">(cut)</span></h1>
+    <div class="subline">Cut from scope — replaced by the Prize Card reward system (see Section 14)</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">This system has been cut entirely from scope, not resolved. The 15 open questions below are preserved for reference but no longer need answers.</p>
+    <ul class="locked-list">
+      <li>✓ Dungeons do not exist in the game. There is no dungeon system, no dungeon spaces on the board, and no dungeon-sourced rewards.</li>
+      <li>✓ What dungeons would have provided — a source of rewards and a sink for player time/risk — is instead handled by the <b>Prize Card system</b>: 3 Prize Cards per game instance, seeded into property card decks, which now drive the entire win economy. See Section 14 (Game Victory Condition) and Section 15 (Player Elimination &amp; Persistent Assets) for the full mechanic.</li>
+      <li>✓ Board Structure (Section 02) confirms there are no dungeon spaces on the 20x20 grid — only the outer path ring, the Town Center, properties, and the Inn/Blacksmith/Church.</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Why this was cut</span>
+      Dungeons were an entirely undesigned subsystem (0 of 15 questions answered) sitting on top of an already ambitious scope — turn loop, PvP, alliances/betrayal, property economy, and monetization. Cutting them removed a whole layer of undesigned complexity without losing the core hook: the Prize Card system covers the same "risk vs. reward" role dungeons would have, using mechanics already built elsewhere.
+    </div>
+
+
+  <div class="block">
+    <h2><span class="k">§</span> Original open questions <span style="font-weight:400;">(no longer applicable)</span></h2>
+    <p class="locked-intro">Preserved for reference. None of these need answers — the system they belonged to has been cut.</p>
+    <ul class="qlist">
+      <li><span class="q-text" style="opacity:0.6;">What unlocks a dungeon?</span></li>
+      <li><span class="q-text" style="opacity:0.6;">How many dungeons exist?</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Dungeon entrance rules</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Dungeon map structure</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Dungeon encounters</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Dungeon rewards</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Dungeon combat</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Dungeon bosses</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Dungeon cards</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Dungeon equipment interactions</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Dungeon failure conditions</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Whether multiple players can enter</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Whether PvP is possible inside</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Whether dungeon progress persists</span></li>
+      <li><span class="q-text" style="opacity:0.6;">Whether dungeons are different per board / game instance</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="12-property-card-design.html"><span class="dir">← Previous</span><span class="t">Property Card Design</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="14-game-victory-condition.html"><span class="dir">Next →</span><span class="t">Game Victory Condition</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 13 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

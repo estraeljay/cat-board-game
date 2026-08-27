@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10. Property Economy — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-3" style="--phase-color:var(--teal);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>10</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 3 — Properties</span>
+      <span class="stamp">Locked · 14/14 resolved</span>
+    </div>
+    <h1>10. Property Economy</h1>
+    <div class="subline">All questions resolved</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">The inflation concern was specifically flagged, so this needs to be finalized carefully.</p>
+    <ul class="locked-list">
+      <li>Working principle: real-money property purchase ≠ direct creation of tradable in-game coins.</li>
+      <li>✓ <b>Two currencies exist:</b> <b>Fel</b> — persistent, cross-game, used for property leveling — and <b>Coins</b> — tracked per-match, but whatever a player finishes a match holding becomes theirs permanently (never reset to zero, never pooled with teammates, even in a shared win).</li>
+      <li>✓ <b>Gems</b> are the premium, real-money-only currency and can be spent to buy Fel directly (see Section 16).</li>
+      <li>✓ <b>Fel sources:</b> winning a Prized Game (claims 80% of the entry-fee pot, which now scales with the match's chosen stake tier — see Section 22), a small starting grant for new players, small Campaign-mode rewards, and Gem purchases.</li>
+      <li>✓ <b>Initial property purchase</b> is paid in Gems (Section 09/16) — Gems are primarily real-money, with a small in-game earn path via bonuses/events.</li>
+      <li>✓ <b>Rent:</b> visitors pay the property owner directly in Coins on visit (proposed) — a new, direct Coin sink/source pair beyond property card draws.</li>
+      <li>✓ <b>Fel sink:</b> property leveling costs (Section 11's table) — the main place Fel actually leaves circulation.</li>
+      <li>✓ <b>Second Fel sink:</b> the entry-fee pot now <b>burns 20% at match end</b> (Section 22) — this is a deliberate, ongoing supply reduction on top of property leveling, not just zero-sum recirculation.</li>
+      <li>✓ <b>Coin source:</b> property card draws — cards can award Coins depending on what's drawn (amount TBD, connects to Section 12).</li>
+      <li>✓ <b>Coin transfer on elimination:</b> 80/20 split to the PvP winner (locked in Section 15).</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Primary exploit risk — largely addressed</span>
+      Player-to-player property trading for currency was flagged as the game's primary economic exploit risk. The Fel entry-fee pot being <b>zero-sum among players</b> (it recirculates rather than being generated from nothing) substantially reduces this risk for the leveling economy specifically. The property <b>resale</b> market (buyer/seller mechanics, fees) is still fully open below and deserves the same scrutiny once designed.
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>How properties generate value for their owner:</b> Direct Coin rent from visitors, plus indirect value via visit-driven leveling (Section 09/11).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether resale sales create coins:</b> No — a zero-sum Gem transfer, nothing new created (protects against inflation, same principle as the entry-fee pot).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether the buyer pays coins/Fel or real money:</b> Neither — buyer pays in <b>Gems</b>, matching the original purchase currency.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether the seller receives coins/Fel:</b> No — seller receives <b>Gems</b> directly from the buyer.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Market transaction fees:</b> 5% resale fee charged on property sales.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Coin sinks:</b> Property leveling Fel cost (Section 11) is the primary sink.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Coin sources:</b> Entry-fee pot wins, starting grants, Campaign rewards, property card draws, Gem purchases.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Maximum coin/Fel supply behavior:</b> Now has two real sinks (property leveling costs + the 20% pot burn) working against Gem-purchase/Campaign inflow — a hard cap probably isn't needed on top of that, but should be revisited once real numbers (rent rates, leveling thresholds) exist to model actual supply/demand.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Coins have exactly three uses, nothing else:</b> paying rent when stepping on a property, serving as the leveling-threshold measure for property leveling (Section 11), and paying to use the <b>Inn, Blacksmith, and Church</b> (Section 02/04/07) — the <b>Fountain stays free</b>, since it's a reward-granting location, not a paid service. Coins remain purely functional, not a general spending currency.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether coins are persistent or match-specific:</b> Both, in a sense — tracked per-match, but the ending total becomes the player's permanently. Fel is fully persistent/cross-game.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether coins survive elimination:</b> Yes, minus the 80% taken by whoever eliminated you (Section 15).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether resale prices fluctuate:</b> Yes, inherently — since the market is player-driven, sellers set their own asking price rather than following a fixed algorithmic formula.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Player-driven, not NPC-controlled:</b> Owners list properties directly, other players buy them — a real player-to-player market, not an algorithmic buyback.</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="09-property-system.html"><span class="dir">← Previous</span><span class="t">Property System</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="11-property-leveling.html"><span class="dir">Next →</span><span class="t">Property Leveling</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 10 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

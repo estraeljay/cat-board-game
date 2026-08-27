@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05. PvP Turn Structure — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-2" style="--phase-color:var(--rose);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>05</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 2 — PvP Systems</span>
+      <span class="stamp">10/12 resolved · 1 deferred to assets</span>
+    </div>
+    <h1>5. PvP Turn Structure</h1>
+    <div class="subline">Deck depletion resolved — only the deferred multi-Guard question remains</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">Full multi-round turn structure, modeled on a Draw/Battle/End phase sequence. Simplified from an earlier Spell/Trap concept down to just Attack and Guard cards, matching the existing 20-card deck.</p>
+    <ul class="locked-list">
+      <li>✓ <b>Who goes first:</b> the player who initiated the PvP battle (via the proximity menu in Section 01) attacks first.</li>
+      <li>✓ <b>Battle setup:</b> both players draw a 5-card starting hand at the start of the PvP battle.</li>
+      <li>✓ <b>Turn timer:</b> 30 seconds per turn. If unused, the turn automatically ends (superseding an earlier placeholder mention of a 20-second PvP timer in Sections 01/14 — those should be updated to 30 seconds for consistency).</li>
+      <li>✓ <b>Turn phases, in order:</b>
+        <br>1. <b>Draw Phase</b> — the active player draws 1 card.
+        <br>2. <b>Battle Phase</b> — the active player sets one Attack card face-up as their attack. The opponent may respond by activating one Guard card from hand to defend (or choose not to).
+        <br>3. <b>End Phase</b> — the turn ends and passes to the opponent, who becomes the new active player.
+      </li>
+      <li>✓ <b>Roles alternate:</b> the active player is always the attacker for their own turn; the other player is the defender who may react with a Guard card. These roles swap each turn.</li>
+      <li>✓ <b>Cards played per turn:</b> exactly one Attack card on your own turn (as attacker); up to one Guard card as a reaction when defending on the opponent's turn. Not both in the same turn — Attack and Guard belong to different roles within a round-trip, not stacked on one turn.</li>
+      <li>✓ Guard cards are therefore <b>always played outside your own turn</b> — specifically during the opponent's Battle Phase, as a reaction to their Attack.</li>
+      <li>✓ An Attack card resolves immediately within the Battle Phase, after the defender has had the chance to respond with a Guard card (or pass).</li>
+      <li>✓ <b>"Battle Lock" is dropped</b> — an undefined term from earlier design notes, superseded by this phase structure.</li>
+      <li>✓ <b>No stacking effects</b> — with Spell/Trap cards dropped, only Attack and Guard cards exist, each with a single printed value. There's nothing to stack.</li>
+      <li>✓ Battle ends at 0 HP or an accepted withdrawal (proposed by either player, any point mid-battle, one attempt per battle — locked in Section 14).</li>
+    </ul>
+  </div>
+
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Who gets the first turn:</b> The PvP initiator.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>What a player can do on their turn:</b> Draw Phase → Battle Phase (set an Attack card) → End Phase.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>How many cards can they play:</b> One Attack card on their own turn; one Guard card as a reaction when defending.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>One Attack + one Guard in the same turn:</b> No — they belong to different roles (attacker vs. defender), not combined on one turn.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Guard cards outside the player's turn:</b> Yes — always played reactively during the opponent's Battle Phase.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>When an Attack card resolves:</b> Immediately in the Battle Phase, after the defender's chance to Guard.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Battle Lock:</b> Dropped — superseded by this phase structure.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Effect stacking:</b> N/A — no Spell/Trap cards, nothing to stack.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>When a player draws:</b> 5-card starting hand at battle start, then 1 card per own turn during the Draw Phase.</span></li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Deck empties mid-battle:</b> Standard shuffle-when-empty — discard pile reshuffles back into the deck, same pattern as property decks (Section 09).</span></li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open question <span style="font-weight:400;">(deferred to asset creation)</span></h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Can a player react to one incoming Attack with more than one Guard card, or is it strictly one-for-one? (Same question as Section 04 — decided when card assets are built.)</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="04-hp-and-combat-mathematics.html"><span class="dir">← Previous</span><span class="t">HP and Combat Mathematics</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="06-the-20-card-deck-rules.html"><span class="dir">Next →</span><span class="t">The 20-Card Deck Rules</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 05 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06. The 20-Card Deck Rules — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-2" style="--phase-color:var(--rose);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>06</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 2 — PvP Systems</span>
+      <span class="stamp">Locked · 12/12 resolved</span>
+    </div>
+    <h1>6. The 20-Card Deck Rules</h1>
+    <div class="subline">All questions resolved</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">Established so far.</p>
+    <ul class="locked-list">
+      <li>Deck is 10 Attack + 10 Guard cards.</li>
+      <li>One use per card per deck cycle.</li>
+      <li>✓ <b>Starting hand size:</b> 5 cards, drawn at the start of each PvP battle (locked in Section 05).</li>
+      <li>✓ <b>Draw frequency:</b> 1 card per own turn, during the Draw Phase — confirms players draw every turn.</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">UI impact</span>
+      These answers will have a major impact on the hand, attack-table, and deck-state UI screens (see Section 20).
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Maximum hand size:</b> A cap exists (proposed ~10) — excess cards are discarded on draw if over the limit.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Voluntary discard:</b> No — cards only leave the hand through normal Attack/Guard play, not player choice.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether discarded cards become "Used":</b> No — played cards are simply removed from play, no separate tracked state.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether unused cards can be retained between deck cycles:</b> No — a full cycle (all 20 cards used) resets the deck completely fresh.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether tabled Attack cards count toward hand/card limits:</b> N/A — an Attack card resolves immediately within the Battle Phase (Section 05), so it never sits tabled long enough to interact with hand limits.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Maximum number of simultaneous tabled Attack cards:</b> Always exactly 1 (or 0) — only the active turn's single Attack card is ever tabled, and it resolves before the turn ends. No "Battle Lock"-style accumulation exists.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether players can inspect their own used cards:</b> No — once used, not inspectable again.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether opponents can see the tabled cards:</b> Yes — the card currently being played is visible to the opponent (they see what's being played, even though hand contents and hand size stay hidden).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether opponents can see the number of cards in hand:</b> No — hand size is hidden information.</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="05-pvp-turn-structure.html"><span class="dir">← Previous</span><span class="t">PvP Turn Structure</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="07-equipment-system.html"><span class="dir">Next →</span><span class="t">Equipment System</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 06 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

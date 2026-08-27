@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>09. Property System — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-3" style="--phase-color:var(--teal);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>09</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 3 — Properties</span>
+      <span class="stamp">18/19 resolved</span>
+    </div>
+    <h1>9. Property System</h1>
+    <div class="subline">Nearly fully resolved — 1 open question remains (exact Gem price, deferred)</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">One of the most developed systems, but important pieces are still missing.</p>
+    <ul class="locked-list">
+      <li>Permanent property ownership.</li>
+      <li>Real-money purchase — specifically via <b>Gems</b>, the premium currency (see Section 16).</li>
+      <li>Owner can place a property on a blank board area before a game begins.</li>
+      <li>Other players can interact with it.</li>
+      <li>Property has its own 10–20 card effect deck.</li>
+      <li>Property cards trigger when players stop on / enter it — current visit definition is a player ending their dice movement on it.</li>
+      <li>Property levels based on visits — <b>superseded</b>, see below.</li>
+      <li>Level-up requires in-game coins — refined to <b>Fel</b>, see below.</li>
+      <li>Property can eventually be sold through an in-game market.</li>
+      <li>✓ Properties exist <b>only in Prized Games</b> — Campaign mode (Section 22) has no properties on its board at all.</li>
+      <li>✓ <b>Leveling gate revised:</b> instead of a raw visit count, a property's progress toward its next level is now driven by <b>cumulative Coins the property itself has earned</b> (from rent payments and property card draws) across every match it's been placed in. Fel is still the cost paid to actually execute the level-up once the Coin threshold is met. Exact Coin thresholds need a full rebalancing pass — see Section 11.</li>
+      <li>✓ <b>Rent:</b> visitors pay the owner directly on visit — proposed in <b>Coins</b> (flagged, not fully confirmed; could be Fel instead). This is both the direct owner benefit and now the source that feeds property leveling.</li>
+      <li>✓ <b>Level effect on payout:</b> rent stays flat regardless of property level — instead, higher levels improve the <b>quality/rarity of drawn cards</b> (connects to Section 12, Property Card Design, and Section 17, Card Rarity).</li>
+      <li>✓ <b>Placement is locked in once chosen</b> for a game instance — no mid-match relocation. Owners still pick a fresh spot each new game (Section 19).</li>
+    </ul>
+  </div>
+
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Exact property purchase pricing — currency mechanism resolved (Gems), exact Gem amount still undecided</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Property ownership rules:</b> Single owner only — no co-ownership, straightforward individual ownership like everything else in the game (proposed default, no contradicting info).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Number of properties one player can own:</b> Max 2 per player, decided at game setup (locked in Section 02).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Property placement restrictions:</b> Must be a blank interior tile (Section 02), and must be at least <b>1 tile away from any other property</b> — no two property blocks can sit directly adjacent.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Property size:</b> 3x3 block + 1 entry tile, impassable except the entry tile (locked in Section 02).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether properties can be moved after placement:</b> No — fixed for the entire game instance once placed.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether property placement is permanent for the game instance:</b> Yes. (Owners still choose a fresh spot each new game, per Section 19 — it just can't change mid-match.)</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether the owner receives benefits when other players visit:</b> Yes — rent, paid in Coins (proposed).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether visitors pay the owner:</b> Yes, Coins-based rent (proposed).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether property cards affect the owner:</b> No — card effects only ever apply to the visitor who drew them. The owner's only direct benefit is flat rent (Coins).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Property card draw frequency:</b> Exactly 1 card per visit.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Property deck reshuffle rules:</b> Standard shuffle-when-empty — discard pile reshuffles back into the deck once exhausted.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Property level maximum at launch:</b> Level 5 (per the progression table in Section 11).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Property level benefits:</b> Rent stays flat regardless of level — instead, card quality/rarity improves as the property levels up.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Property upgrade costs:</b> See Section 11's Fel cost table.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Property selling formula:</b> No fixed formula — the market is player-driven (Section 10), so the seller sets their own asking price. A 5% resale fee applies on the transaction.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Market fees / taxes:</b> 5% resale fee (locked in Section 10).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether property can be sold while placed on a board:</b> No — must be unplaced/not in an active game to sell.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>What happens to the property if its owner is eliminated:</b> Fully resolved in Section 15 — protected, stays on board but inactive, ownership untouched.</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="08-equipment-progression-balance.html"><span class="dir">← Previous</span><span class="t">Equipment Progression Balance</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="10-property-economy.html"><span class="dir">Next →</span><span class="t">Property Economy</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 09 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

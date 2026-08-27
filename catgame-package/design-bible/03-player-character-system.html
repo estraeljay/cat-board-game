@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03. Player Character System — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-1" style="--phase-color:var(--gold);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>03</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 1 — Core Rules</span>
+      <span class="stamp">9/10 resolved</span>
+    </div>
+    <h1>3. Player Character System</h1>
+    <div class="subline">Nearly fully resolved — 1 open question remains (cosmetic customization, deferred)</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="tag">Amendment — unification pass 2026-08-28</span>
+    The class roster is now <b>locked at exactly 3: Knight, Mage, Priest</b> (was "3–4"). The per-class <b>special abilities are still undesigned</b> — the prototype and Unity port currently ship classes as starter-deck flavour only, no active ability, and that gap blocks the final class-ability art. Authoritative detail in <code>MASTER-DATA-SHEET.md</code> §4.
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">Cats are cosmetic collectibles layered on top of a functional Class system — the class carries the gameplay identity, the cat skin carries the look.</p>
+    <ul class="locked-list">
+      <li>✓ <b>Cats affect PvP</b> — through the class they belong to (see below). Not purely cosmetic after all.</li>
+      <li>✓ <b>Cat Classes:</b> 3-4 classes exist. Each class grants a <b>unique special ability</b> and a <b>class-flavored starter battle deck</b> — still exactly 10 Attack + 10 Guard cards (Section 06's count stays fixed), just with different printed values/effects per class.</li>
+      <li>✓ <b>Cats vs. Classes:</b> a "cat" is a cosmetic skin; a "class" is the functional gameplay category. Proposed (not yet explicitly confirmed): multiple cosmetic cat skins can share the same underlying class — flag if that's not the intent.</li>
+      <li>✓ <b>Unlock system:</b> both purchasable (Booster Packs / Gems, Section 16) and earned through Campaign mode play (Section 22).</li>
+      <li>✓ <b>Starting/Maximum HP:</b> Base 100, from equipment only (Section 04) — unaffected by class or cat choice.</li>
+      <li>✓ <b>Starting stats:</b> HP 100, Attack/Defense start at 0 bonus (equipment resets to Level 1 every match).</li>
+      <li>✓ Class-specific ability names, exact deck value differences, and cat skin roster are all <b>deferred to asset creation</b> — same treatment as equipment level magnitudes and combat card values.</li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Are cats purely cosmetic?</b> No — classes carry gameplay function; the individual cat skin is cosmetic.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Does each cat have a unique ability?</b> The class has a unique ability, shared by any cat skins within that class.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Starting HP:</b> 100 (Section 04).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Maximum HP:</b> 100 + equipment bonuses, no cat/class modifier.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Starting stats:</b> HP 100, Attack/Defense 0 bonus at match start.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Character classes/archetypes:</b> Yes — 3-4 classes, each with a unique ability and flavored starter deck.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Unlock system:</b> Both purchasable and earned through Campaign play.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether characters affect PvP:</b> Yes, via class ability and deck flavor.</span></li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Movement characteristics:</b> Fully uniform — all cats/classes move identically per Section 02's path-following rule. No class-based movement variation.</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Cosmetic customization — accessories/skins layered on top of a base cat model?</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="02-board-structure.html"><span class="dir">← Previous</span><span class="t">Board Structure</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="04-hp-and-combat-mathematics.html"><span class="dir">Next →</span><span class="t">HP and Combat Mathematics</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 03 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

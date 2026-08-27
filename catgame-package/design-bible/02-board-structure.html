@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02. Board Structure — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-1" style="--phase-color:var(--gold);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>02</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 1 — Core Rules</span>
+      <span class="stamp">Locked · 19/19 resolved</span>
+    </div>
+    <h1>2. Board Structure</h1>
+    <div class="subline">All questions resolved — path network, properties, and special locations fully defined</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">Revised from an open 2D grid to a <b>single-tile-wide path network</b> woven through a fixed 20x20 grid — properties, Town Center, and special locations are fixed points connected by procedurally-generated walkways.</p>
+    <ul class="locked-list">
+      <li>✓ There is a 2D board: a fixed <b>20x20 grid</b> (400 tiles). <b>Topology revised</b> — no longer a fully open grid; movement is now constrained to a single-tile-wide path network (see below), closer to a branching track than free 2D movement.</li>
+      <li>✓ The <b>outermost ring of tiles is a permanent path</b> — always walkable, can never hold a property or be built on. This also defines the board's hard boundary; there's no wrap-around.</li>
+      <li>✓ <b>Town Center:</b> a walled 5x5 block at the exact center of the grid, where all players start. It's impassable from any side except <b>4 middle exit tiles</b> (one per edge of the 5x5 block) — same "impassable block, limited entry point" logic as properties, just bigger. Each exit connects into the procedural path network.</li>
+      <li>✓ <b>Path/obstacle system:</b> any blank space wider than 1 tile gets filled with <b>obstacles</b> (trees, crates, etc.) so that all walkable space forms a continuous single-tile-wide path — no open 2D areas remain. This guarantees a clear visual route between every point of interest.</li>
+      <li>✓ <b>Movement is now path-following (track-style)</b>, not free straight-line-in-any-direction. A roll moves the player that many tiles along the path. At forks, the player <b>actively chooses which branch to take</b> — confirmed, and intentional: this creates a real <b>chasing dynamic</b>, where a player can deliberately steer toward another player's position to pursue them across the board, rather than movement being purely random or fixed.</li>
+      <li>✓ <b>Generation order revised:</b> properties are placed first (as before, at game setup), <b>then the obstacle/path layout is procedurally generated</b> around them each game — this is a partial procedural-generation step, not a fully procedural board. The 20x20 grid, Town Center, and outer ring stay fixed; only the tree/crate obstacle placement varies per game.</li>
+      <li>✓ Properties can be placed on blank interior tiles (anywhere that isn't the outer path ring or the Town Center).</li>
+      <li>✓ A property occupies a <b>3x3 block + 1 entry tile</b> (10 tiles total). The entry tile sits directly above the block's center tile and is the only tile that counts as a "visit." The 3x3 block itself is <b>impassable</b> — players must route around it via the path network.</li>
+      <li>✓ <b>Property spacing:</b> two property blocks must be placed at least 1 tile apart — no two properties can sit directly adjacent (locked in Section 09). This spacing is what the path/obstacle system fills in.</li>
+      <li>✓ Each player can own and place a maximum of <b>2 properties</b>, decided at the start of each game. With a 5-player max, that's up to <b>10 properties</b> possible on one board.</li>
+      <li>✓ <b>Dungeons are cut entirely from scope</b> (formerly Section 13) — no dungeon spaces exist on the board.</li>
+      <li>✓ Plain board tiles ("normal locations") have no special effect — just walkable ground.</li>
+      <li>✓ Three new special-purpose tile types exist, distinct from player-owned properties: an <b>Inn</b>, a <b>Blacksmith</b>, and a <b>Church</b> — one of each, randomly placed among blank spaces at game start to aid players. The path network must connect to each of these too.</li>
+      <li>✓ <b>Church's function:</b> purification — removes <b>Poison</b> and <b>Paralysis</b> status effects (see Section 04/12 for what these do and where they come from).</li>
+      <li>✓ <b>Inn, Blacksmith, and Church all cost Coins to use</b> (locked in Section 10) — exact amounts deferred to a balance pass. The <b>Fountain</b> (Campaign-exclusive, Section 22) stays free since it grants rewards rather than providing a paid service.</li>
+      <li>✓ <b>Inn/Blacksmith/Church footprint:</b> 2x2 block + 1 entry tile — smaller than a property's 3x3 footprint, but same "block + single interactive entry tile" pattern.</li>
+      <li>✓ <b>No shortcuts or portals</b> exist on the board — movement is entirely path-based, no teleportation.</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Amendment — unification pass 2026-08-28</span>
+      Two <b>1×1 board hazard tiles</b> were promoted to canon from the prototype (authoritative detail in <code>MASTER-DATA-SHEET.md</code> §3 / §5):
+      <b>Poison Swamp</b> (triggers on every tile of movement through it, applies the Poisoned status) and
+      <b>Thorn Vines</b> (triggers on pass-through, applies <em>Snared</em> — the next roll is coin-flip-gated: even → roll normally, odd → move exactly 1 tile; then it clears). Snared is deliberately distinct from Paralysis. Placeholder density is 3 of each per board; final counts are a balance-pass number.
+    </div>
+
+    <div class="note">
+      <span class="tag">Ripple effect worth watching</span>
+      The Section 01 proximity check (distance 0–1, 8-directional) still works mechanically, but will trigger less often now — most of the 8 surrounding tiles around any given path tile will typically be obstacles, not open ground. This isn't a contradiction, just a natural consequence: PvP/alliance encounters will now cluster more tightly along the path network itself.
+    </div>
+
+    <div class="note">
+      <span class="tag">All resolved</span>
+      Every original open question is answered. Section 02 is fully locked.
+    </div>
+
+
+  <div class="block">
+    <h2><span class="k">§</span> Resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Board dimensions / layout:</b> Fixed 20x20 grid, single-tile-wide path network (revised from open grid).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Number of spaces:</b> 400 tiles total — outer permanent path ring, walled 5x5 Town Center, blank interior tiles (now split between path tiles and obstacle tiles), up to 10 properties (10 tiles each), plus the Inn/Blacksmith/Church.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Types of spaces:</b> Permanent path, Town Center, path tile, obstacle tile (trees/crates), property (block + entry tile), and special-purpose tiles (Inn/Blacksmith/Church).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Starting area:</b> Town Center — a walled 5x5 block at the board's center, exited via 4 middle tiles (one per edge), each connecting into the path network.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Movement direction:</b> Path-following (revised from free straight-line movement) — the player moves along the single-tile path for the rolled distance, choosing a branch at forks.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Fixed or procedural:</b> Revised — the grid/Town Center/outer ring are fixed, property placement is chosen each game, and the obstacle/path layout filling the gaps is procedurally generated after properties are placed.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Blank property spaces:</b> Any interior tile that isn't the outer path ring or the Town Center.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Dungeon spaces:</b> N/A — dungeons cut entirely from scope.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Normal locations:</b> Plain walkable tiles, no effect.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Special locations:</b> Inn, Blacksmith, Church — one of each, randomly placed at game start. Functions locked (heal/level/cure); footprint size still open.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Board boundaries:</b> Hard edges at the 20x20 limit — no wrap-around.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether properties can block movement:</b> Yes — the 3x3 block is impassable.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether properties occupy one or multiple tiles:</b> Multiple — 3x3 block + 1 entry tile (10 total).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Maximum properties on one board:</b> Up to 10 (2 per player × max 5 players).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether players can place properties before the game starts:</b> Yes — placement happens at game setup.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Whether property placement can affect strategic routes:</b> Yes — impassable blocks force players to route around them.</span></li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Special locations — resolved decisions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Footprint size of the Inn, Blacksmith, and Church:</b> 2x2 block + 1 entry tile (smaller than the 3x3 property footprint).</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>What each of the Inn, Blacksmith, and Church does:</b> Inn heals HP, Blacksmith levels equipment, Church cures Poison/Paralysis. Exact Inn healing amount still TBD.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Shortcuts/portals:</b> No — the board stays limited to path tiles, obstacles, properties, and the three special locations. No teleport-style mechanics.</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="01-core-game-loop.html"><span class="dir">← Previous</span><span class="t">Core Game Loop</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="03-player-character-system.html"><span class="dir">Next →</span><span class="t">Player Character System</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 02 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

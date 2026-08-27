@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>22. Game Modes — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-6" style="--phase-color:var(--green);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>22</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 6 — Multiplayer &amp; Lifecycle</span>
+      <span class="stamp">Nearly fully locked · 1 open</span>
+    </div>
+    <h1>22. Game Modes</h1>
+    <div class="subline">Caps and queueing resolved — only exact Campaign reward amounts remain (deferred)</div>
+    <div class="save-bar">
+      <button type="button" id="enable-save-btn" class="save-btn" onclick="enableSaving()">Enable saving to this file</button>
+      <span id="save-status" class="save-status">Checkbox clicks won’t be saved to disk until you connect the file.</span>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">Everything defined in Sections 01–21 so far describes one specific way to play — the paid, high-stakes version. This section splits that out as one of two modes, and introduces a free on-ramp mode alongside it.</p>
+    <ul class="locked-list">
+      <li>✓ <b>Prized Game</b> — the mode everything else in this bible describes by default. <b>Revised from a flat 500 Fel fee to variable stake tiers</b>: the game creator sets an entry fee, and all players in that lobby pay the same amount. Example tiers used for expiration timing (Section 18): 100-500 Fel, 501-1,000 Fel, 1,001-2,000+ Fel. All players' fees form a pot (up to 5x the per-player fee for a full lobby). At game end, <b>20% of the pot is burned</b> (permanently removed from circulation — a deliberate Fel sink) and the remaining <b>80% is awarded to the winner(s)</b>. Full property system (up to 10 properties, 3x3+1 blocks), the 3 Prize Cards, alliances/betrayal, and elimination all apply exactly as locked in Sections 01, 02, 09, and 14/15.</li>
+      <li>✓ <b>Higher stakes = bigger pot</b>, naturally letting players choose their own risk/reward level — a nice emergent consequence of the tier system, not something separately designed.</li>
+      <li>✓ <b>Campaign</b> — a free-entry mode. Same core game loop as a Prized Game (same 20x20 board shape, dice movement, PvP, alliances) but with <b>no entry fee, no properties, and no Prize Cards</b> — there's nothing to place at game setup and nothing hidden to find.</li>
+      <li>✓ Campaign rewards: a small amount of <b>Coins</b> (the same personal, match-scoped currency from Prized Games) plus <b>common-rarity cards</b>, drawn from the same Attack/Guard/Property card pools used in Prized Games. These are collected and carried forward for use in Prized Games.</li>
+      <li>✓ <b>Campaign is primarily PvE:</b> <b>bots are the main opponents</b>, not other real players. Composition is flexible — however many real players queue together, <b>bots fill any remaining slots</b> up to the usual player count.</li>
+      <li>✓ Campaign includes <b>NPC-exclusive locations</b> (e.g. a Fountain) not present in Prized Games — these add challenge and serve as reward triggers, alongside the Fountain itself. Full list deferred to asset creation.</li>
+      <li>✓ Purpose: Campaign is the on-ramp — new or Fel-poor players build up a small card collection and currency without risking the Prized Game entry fee. This is one of (possibly several) ways a new player affords their first Prized Game, alongside the small starting Fel grant already locked in Section 10.</li>
+      <li>✓ The in-game Market sells <b>Booster Packs</b>, purchasable with Gems — see Section 16 for the monetization entry.</li>
+    </ul>
+  </div>
+
+    <div class="note">
+      <span class="tag">Placement note</span>
+      Filed under Phase 6 (Multiplayer &amp; Lifecycle) alongside Section 19, since it's really a variant on how a game instance gets created — but it touches nearly every other system (board, properties, economy, monetization), so revisit this placement if it stops feeling right.
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions</h2>
+    <ul class="qlist">
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Campaign board layout:</b> Outer path ring + Town Center + Inn/Blacksmith/Church, no player-owned properties. Plus new <b>NPC locations</b> (e.g. a Fountain) exclusive to Campaign — specific list deferred to asset creation.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Campaign reward triggers:</b> The Fountain plus other NPC locations (not the sole source) — exact list deferred to asset creation.</span></li>
+      <li><button type="button" class="qcheck" data-state="open" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text">Exactly how much Coins/how many cards does a Campaign match award, and does that scale with performance (win/lose) or is it flat? (Deferred alongside other numeric balance items.)</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Campaign alliance/winner caps:</b> Same as Prized Games — max 3-player alliance, max 2 winners, applies even when facing bots.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Queueing:</b> Fully separate — a player is in one queue (Campaign or Prized Game) at a time, not both simultaneously.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Property leveling impact:</b> None — leveling is Coin-gated, not tied to entry fees, and Fel is fungible/persistent regardless of which stake tier it came from. Section 11's Fel cost table stays exactly as calibrated.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Custom vs. preset tiers:</b> Any custom fee amount — the game creator sets it freely. The 100-500/501-1,000/1,001-2,000+ brackets are only used to determine expiration timing (Section 18), not selectable options.</span></li>
+      <li><button type="button" class="qcheck" data-state="done" aria-label="Mark as revisiting" onclick="toggleQuestion(this)"></button><span class="q-text"><b>Stake tier's only effect is pot size</b> — nothing else (odds, property access, etc.) changes based on the fee chosen.</span></li>
+    </ul>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="21-technical-game-data-structure.html"><span class="dir">← Previous</span><span class="t">Technical Game Data Structure</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="index.html"><span class="dir">Next →</span><span class="t">Index</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 22 of 22</div>
+</footer>
+
+<script src="save.js"></script>
+</body>
+</html>

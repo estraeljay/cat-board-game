@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Cat Board Game — Vertical Slice</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; background: #14161c; color: #e6e6e6; }
+  h1 { font-size: 1.3rem; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.05rem; margin: 0 0 0.5rem; }
+  .note { color: #9aa0ab; font-size: 0.85rem; max-width: 640px; }
+  button { font-size: 0.95rem; padding: 0.45rem 0.9rem; margin: 0.2rem 0.4rem 0.2rem 0; cursor: pointer; border-radius: 4px; border: 1px solid #444; background: #262a33; color: #e6e6e6; }
+  button:hover:not(:disabled) { background: #323744; }
+  button:disabled { opacity: 0.4; cursor: default; }
+  textarea { width: 100%; max-width: 400px; font-family: inherit; background: #1c1f27; color: #e6e6e6; border: 1px solid #444; border-radius: 4px; padding: 0.4rem; }
+  input[type="text"], select { font-family: inherit; font-size: 0.95rem; background: #1c1f27; color: #e6e6e6; border: 1px solid #444; border-radius: 4px; padding: 0.35rem 0.5rem; }
+  .setup { display: flex; flex-direction: column; gap: 0.6rem; max-width: 420px; }
+  .playerSetupRow { display: flex; gap: 0.5rem; margin-bottom: 0.4rem; }
+  .playerSetupRow input[type="text"] { flex: 1; }
+  .layout { display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
+  .left { flex-shrink: 0; }
+  .right { flex: 1; min-width: 320px; }
+  .board { display: grid; gap: 0; border: 1px solid #333; }
+  .tile { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 9px; background-repeat: no-repeat; background-position: center; background-size: cover; }
+  .tile.obstacle { background: #14170f; }
+  .tile.path { background: #5c6b3f; }
+  .tile.ring { background: #8a7a3a; }
+  .tile.townCenter { background: #2a3348; }
+  .tile.townCenter.tc-door { background: #e8c060; }
+  .tile.entry-townCenter { background: #c9954a; }
+  .tile.blacksmith { background: #5a3d2b; }
+  .tile.inn { background: #3d5a3f; }
+  .tile.church { background: #4a4a6a; }
+  .tile.entry-blacksmith { background: #8a6a4a; }
+  .tile.entry-inn { background: #6a9a6e; }
+  .tile.entry-church { background: #7a7aae; }
+  .tile.hazard-poison { background: #4a6a2a; }
+  .tile.hazard-thorn { background: #6a3a2a; }
+  .tile.fountain { background: #2b5a5a; }
+  .tile.yarnEmporium { background: #6a2b5a; }
+  .tile.fishMarket { background: #2b4a6a; }
+  .tile.catnipGarden { background: #4a6a2b; }
+  .tile.entry-fountain { background: #4a9a9a; }
+  .tile.entry-yarnEmporium { background: #a45aa4; }
+  .tile.entry-fishMarket { background: #5a8aca; }
+  .tile.entry-catnipGarden { background: #8aca5a; }
+  .token { display: inline-block; width: 20px; height: 20px; border-radius: 50%; text-align: center; line-height: 20px; font-weight: bold; color: #14161c; margin: 1px; }
+  .token.art { border-radius: 4px; background-size: contain; background-position: center; background-repeat: no-repeat; outline-offset: -2px; }
+  .players { margin-bottom: 0.75rem; }
+  .playerRow { padding: 0.15rem 0; }
+  .playerRow.dead { opacity: 0.4; text-decoration: line-through; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 0.4rem; }
+  .allianceTag { color: #9aa0ab; font-size: 0.8rem; }
+  .statusTag { font-size: 0.75rem; padding: 0.05rem 0.4rem; border-radius: 3px; margin-left: 0.3rem; }
+  .statusTag.poisoned { background: #3d5a2b; color: #b8e0a0; }
+  .statusTag.snared { background: #5a3d2b; color: #e0c0a0; }
+  .statusTag.grace { background: #2b3d5a; color: #a0c0e0; }
+  .controls { border: 1px solid #444; border-radius: 6px; padding: 0.75rem; margin-bottom: 0.75rem; background: #1c1f27; }
+  .log { border: 1px solid #333; border-radius: 6px; padding: 0.5rem 0.75rem; max-height: 220px; overflow-y: auto; font-family: ui-monospace, monospace; font-size: 0.8rem; background: #14161c; }
+  .battlePanel { margin-top: 0.5rem; font-size: 0.85rem; color: #cfd3da; }
+  .battleLog { max-height: 100px; overflow-y: auto; font-family: ui-monospace, monospace; font-size: 0.72rem; color: #7c8290; }
+  .withdrawRow { margin-top: 0.5rem; }
+</style>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cat Board Game — Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body style="--phase-color: var(--gold);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">22 SYSTEMS · <b>10 LOCKED</b></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Working design document</div>
+    <h1>Rules before <em>renders</em>.</h1>
+    <p class="lede">Every system a real-money property, a PvP battle, and a cat character eventually
+    touches — indexed as one page per system, so any single one can be iterated on
+    without reopening the whole document.</p>
+    <div class="hero-meta">
+      <div class="m"><span class="num">22</span><span class="lbl">Systems mapped</span></div>
+      <div class="m"><span class="num">8</span><span class="lbl">Build phases</span></div>
+      <div class="m"><span class="num">32</span><span class="lbl">Open questions</span></div>
+      <div class="m"><span class="num">0</span><span class="lbl">Ready for assets</span></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <span class="tag">Read this first</span>
+    <b><code>MASTER-DATA-SHEET.md</code> at the package root is now the authoritative spec.</b> These HTML pages are the
+    long-form reasoning archive and lag behind it — pages 01, 02, and 04 carry "unification pass 2026-08-28" amendment
+    notes; the master sheet has the full detail. See <code>UNIFICATION-NOTES.md</code> for the complete change log.
+  </div>
+
+  <div class="callout">
+    <span class="tag">Most important next step</span>
+    The rules layer is essentially complete. <a href="12-property-card-design.html">Property Card Design</a> (Section 12),
+    <a href="17-card-rarity-and-collection-system.html">Card Rarity</a> (17), the 3 per-class special abilities (Section 03),
+    and various reward-number placeholders are what's left — asset/content and balance work, not core game logic.
+  </div>
+
+  <div class="roadmap">
+    <h2>Recommended build order</h2>
+    <p class="sub">Not to be tackled randomly — mechanics settle before any commercial or visual asset is produced.</p>
+    <ul class="roadmap-list">
+    <li>
+      <span class="roadmap-num" style="--phase-c:var(--slate);">Phase 00</span>
+      <div class="roadmap-body"><b>Foundation</b><span>Sketch the technical data model everything else will read and write.</span></div>
+    </li>
+    <li>
+      <span class="roadmap-num" style="--phase-c:var(--gold);">Phase 01</span>
+      <div class="roadmap-body"><b>Core Rules</b><span>Turn loop, board, characters, HP, victory condition.</span></div>
+    </li>
+    <li>
+      <span class="roadmap-num" style="--phase-c:var(--rose);">Phase 02</span>
+      <div class="roadmap-body"><b>PvP Systems</b><span>Turn structure, the 20-card deck, equipment interaction.</span></div>
+    </li>
+    <li>
+      <span class="roadmap-num" style="--phase-c:var(--teal);">Phase 03</span>
+      <div class="roadmap-body"><b>Properties</b><span>Placement, visits, card decks, leveling, economy.</span></div>
+    </li>
+    <li>
+      <span class="roadmap-num" style="--phase-c:var(--violet);">Phase 04</span>
+      <div class="roadmap-body"><b>Dungeons</b><span>Unlock rules, structure, rewards.</span></div>
+    </li>
+    <li>
+      <span class="roadmap-num" style="--phase-c:var(--blue);">Phase 05</span>
+      <div class="roadmap-body"><b>Collection &amp; Monetization</b><span>Rarity, acquisition, trading, real-money purchases, anti-pay-to-win.</span></div>
+    </li>
+    <li>
+      <span class="roadmap-num" style="--phase-c:var(--green);">Phase 06</span>
+      <div class="roadmap-body"><b>Multiplayer &amp; Lifecycle</b><span>Elimination, player count, invites, disconnects, instance lifecycle, game modes.</span></div>
+    </li>
+    <li>
+      <span class="roadmap-num" style="--phase-c:var(--pink);">Phase 07</span>
+      <div class="roadmap-body"><b>Asset Specification</b><span>Only now: card templates, art, board tiles, UI, VFX, audio.</span></div>
+    </li>
+    </ul>
+  </div>
+
+  <div style="margin-top:52px;">
+  <div class="phase-group">
+    <div class="phase-head">
+      <span class="n" style="--phase-c:var(--slate);">P0</span>
+      <h3>Foundation</h3>
+      <span class="count">1 section</span>
+    </div>
+    <div class="card-grid" style="--phase-c:var(--slate);">
+    <a class="card" style="--phase-c:var(--slate);" href="21-technical-game-data-structure.html">
+      <div class="cn">21</div>
+      <h4>Technical Game Data Structure</h4>
+      <div class="meta"><span>Phase 0</span><span class="mono">locked</span></div>
+    </a>
+    </div>
+  </div>
+
+  <div class="phase-group">
+    <div class="phase-head">
+      <span class="n" style="--phase-c:var(--gold);">P1</span>
+      <h3>Core Rules</h3>
+      <span class="count">5 sections</span>
+    </div>
+    <div class="card-grid" style="--phase-c:var(--gold);">
+    <a class="card" style="--phase-c:var(--gold);" href="01-core-game-loop.html">
+      <div class="cn">01</div>
+      <h4>Core Game Loop</h4>
+      <div class="meta"><span>Phase 1</span><span class="mono">locked</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--gold);" href="02-board-structure.html">
+      <div class="cn">02</div>
+      <h4>Board Structure</h4>
+      <div class="meta"><span>Phase 1</span><span class="mono">locked</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--gold);" href="03-player-character-system.html">
+      <div class="cn">03</div>
+      <h4>Player Character System</h4>
+      <div class="meta"><span>Phase 1</span><span class="oq">1 open</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--gold);" href="04-hp-and-combat-mathematics.html">
+      <div class="cn">04</div>
+      <h4>HP and Combat Mathematics</h4>
+      <div class="meta"><span>Phase 1</span><span class="oq">3 open</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--gold);" href="14-game-victory-condition.html">
+      <div class="cn">14</div>
+      <h4>Game Victory Condition</h4>
+      <div class="meta"><span>Phase 1</span><span class="mono">locked</span></div>
+    </a>
+    </div>
+  </div>
+
+  <div class="phase-group">
+    <div class="phase-head">
+      <span class="n" style="--phase-c:var(--rose);">P2</span>
+      <h3>PvP Systems</h3>
+      <span class="count">3 sections</span>
+    </div>
+    <div class="card-grid" style="--phase-c:var(--rose);">
+    <a class="card" style="--phase-c:var(--rose);" href="05-pvp-turn-structure.html">
+      <div class="cn">05</div>
+      <h4>PvP Turn Structure</h4>
+      <div class="meta"><span>Phase 2</span><span class="oq">1 open</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--rose);" href="06-the-20-card-deck-rules.html">
+      <div class="cn">06</div>
+      <h4>The 20-Card Deck Rules</h4>
+      <div class="meta"><span>Phase 2</span><span class="mono">locked</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--rose);" href="07-equipment-system.html">
+      <div class="cn">07</div>
+      <h4>Equipment System</h4>
+      <div class="meta"><span>Phase 2</span><span class="oq">3 open</span></div>
+    </a>
+    </div>
+  </div>
+
+  <div class="phase-group">
+    <div class="phase-head">
+      <span class="n" style="--phase-c:var(--teal);">P3</span>
+      <h3>Properties</h3>
+      <span class="count">4 sections</span>
+    </div>
+    <div class="card-grid" style="--phase-c:var(--teal);">
+    <a class="card" style="--phase-c:var(--teal);" href="09-property-system.html">
+      <div class="cn">09</div>
+      <h4>Property System</h4>
+      <div class="meta"><span>Phase 3</span><span class="oq">1 open</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--teal);" href="10-property-economy.html">
+      <div class="cn">10</div>
+      <h4>Property Economy</h4>
+      <div class="meta"><span>Phase 3</span><span class="mono">locked</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--teal);" href="11-property-leveling.html">
+      <div class="cn">11</div>
+      <h4>Property Leveling</h4>
+      <div class="meta"><span>Phase 3</span><span class="oq">2 open</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--teal);" href="12-property-card-design.html">
+      <div class="cn">12</div>
+      <h4>Property Card Design</h4>
+      <div class="meta"><span>Phase 3</span><span class="oq">10 open</span></div>
+    </a>
+    </div>
+  </div>
+
+  <div class="phase-group">
+    <div class="phase-head">
+      <span class="n" style="--phase-c:var(--violet);">P4</span>
+      <h3>Dungeons</h3>
+      <span class="count">1 section — cut from scope</span>
+    </div>
+    <div class="card-grid" style="--phase-c:var(--violet);">
+    <a class="card" style="--phase-c:var(--violet);opacity:0.55;" href="13-dungeons.html">
+      <div class="cn">13</div>
+      <h4>Dungeons <span style="font-weight:400;">(cut)</span></h4>
+      <div class="meta"><span>Phase 4</span><span class="mono">cut from scope</span></div>
+    </a>
+    </div>
+  </div>
+
+  <div class="phase-group">
+    <div class="phase-head">
+      <span class="n" style="--phase-c:var(--blue);">P5</span>
+      <h3>Collection &amp; Monetization</h3>
+      <span class="count">3 sections</span>
+    </div>
+    <div class="card-grid" style="--phase-c:var(--blue);">
+    <a class="card" style="--phase-c:var(--blue);" href="08-equipment-progression-balance.html">
+      <div class="cn">08</div>
+      <h4>Equipment Progression Balance</h4>
+      <div class="meta"><span>Phase 5</span><span class="oq">1 open</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--blue);" href="16-real-money-purchase-monetization-rules.html">
+      <div class="cn">16</div>
+      <h4>Real-Money Purchase / Monetization Rules</h4>
+      <div class="meta"><span>Phase 5</span><span class="oq">1 open</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--blue);" href="17-card-rarity-and-collection-system.html">
+      <div class="cn">17</div>
+      <h4>Card Rarity &amp; Collection System</h4>
+      <div class="meta"><span>Phase 5</span><span class="oq">9 open</span></div>
+    </a>
+    </div>
+  </div>
+
+  <div class="phase-group">
+    <div class="phase-head">
+      <span class="n" style="--phase-c:var(--green);">P6</span>
+      <h3>Multiplayer &amp; Lifecycle</h3>
+      <span class="count">4 sections</span>
+    </div>
+    <div class="card-grid" style="--phase-c:var(--green);">
+    <a class="card" style="--phase-c:var(--green);" href="15-player-elimination-and-persistent-assets.html">
+      <div class="cn">15</div>
+      <h4>Player Elimination &amp; Persistent Assets</h4>
+      <div class="meta"><span>Phase 6</span><span class="mono">locked</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--green);" href="18-multiplayer-rules.html">
+      <div class="cn">18</div>
+      <h4>Multiplayer Rules</h4>
+      <div class="meta"><span>Phase 6</span><span class="mono">locked</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--green);" href="19-game-instance-lifecycle.html">
+      <div class="cn">19</div>
+      <h4>Game Instance Lifecycle</h4>
+      <div class="meta"><span>Phase 6</span><span class="mono">locked</span></div>
+    </a>
+    <a class="card" style="--phase-c:var(--green);" href="22-game-modes.html">
+      <div class="cn">22</div>
+      <h4>Game Modes <span style="font-weight:400;">(new)</span></h4>
+      <div class="meta"><span>Phase 6</span><span class="oq">1 open</span></div>
+    </a>
+    </div>
+  </div>
+
+  <div class="phase-group">
+    <div class="phase-head">
+      <span class="n" style="--phase-c:var(--pink);">P7</span>
+      <h3>Asset Specification</h3>
+      <span class="count">1 section</span>
+    </div>
+    <div class="card-grid" style="--phase-c:var(--pink);">
+    <a class="card" style="--phase-c:var(--pink);" href="20-ui-ux-architecture.html">
+      <div class="cn">20</div>
+      <h4>UI / UX Architecture</h4>
+      <div class="meta"><span>Phase 7</span><span class="mono">locked</span></div>
+    </a>
+    </div>
+  </div>
+
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Open each numbered file directly to edit that system on its own.</div>
+</footer>
+
+</body>
+</html>

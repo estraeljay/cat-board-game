@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>21. Technical Game Data Structure — Cat Board Game Design Bible</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="phase-0" style="--phase-color:var(--slate);">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="index.html">
+      <span class="paw">🐾</span>
+      <span><span class="name">Design Bible</span><br><span class="sub">Cat Board Game</span></span>
+    </a>
+    <div class="page-index">SECTION <b>21</b> / 22</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-header">
+    <div class="row">
+      <span class="phase-tag"><span class="dot"></span>Phase 0 — Foundation</span>
+      <span class="stamp">Awaiting decision</span>
+    </div>
+    <h1>21. Technical Game Data Structure</h1>
+    <div class="subline">0 open questions to resolve before assets are created</div>
+  </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> What's locked</h2>
+    <p class="locked-intro">Before asset creation, the game's underlying data model should be defined. A first pass:</p>
+    <div class="example-tree">Player
+ ├── Account
+ ├── Cat (cosmetic skin)
+ ├── Cat Class (functional: ability + starter deck flavor)
+ ├── Permanent Equipment
+ ├── Permanent Cards
+ ├── Permanent Properties
+ ├── Persistent Currency (Fel)
+ └── Gems (premium currency)
+
+Game Instance
+ ├── Board (fixed grid/Town Center/outer ring + procedural obstacle/path layout)
+ ├── Players
+ ├── Player HP
+ ├── Player Status Effects (Poison, Paralysis)
+ ├── Equipment Levels
+ ├── Card Deck States
+ ├── Property Placements
+ ├── Property Levels
+ ├── Property Deck States
+ ├── Property Earned-Coins (drives leveling — see Section 11)
+ ├── Coins (personal, match-tracked but kept permanently)
+ ├── Prize Card Locations (3 per instance)
+ ├── Entry-Fee Pot (Fel)
+ ├── Alliance State (tracked pairs/groups)
+ └── Game State</div>
+  </div>
+
+    <div class="note">
+      <span class="tag">Revised this session</span>
+      This model was updated to reflect: the Fel/Coins/Gems three-currency split, Cat Classes as a separate concept from cosmetic Cats, status effects (Poison/Paralysis), the procedural obstacle/path board layer, Prize Cards, the entry-fee pot, and tracked alliance state — none of which existed in the original data model.
+    </div>
+
+  <div class="block">
+    <h2><span class="k">§</span> Open questions</h2>
+    <p class="locked-intro">None outstanding — see notes above.</p>
+  </div>
+
+  <div class="pagenav">
+    <a class="prev" href="20-ui-ux-architecture.html"><span class="dir">← Previous</span><span class="t">UI / UX Architecture</span></a>
+    <a class="home" href="index.html">Index</a>
+    <a class="next" href="22-game-modes.html"><span class="dir">Next →</span><span class="t">Game Modes</span></a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="wrap">Cat Board Game — Design Bible · Section 21 of 22</div>
+</footer>
+
+</body>
+</html>
