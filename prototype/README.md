@@ -25,6 +25,19 @@ Art: drop PNGs into `../assets/` per `../assets/README.md` and they render autom
 - `game.js` — turn loop, movement/forks, proximity check, alliances, victory condition (Sections 01/14), property/toll/card-draw logic.
 - `app.js` / `index.html` — hotseat UI.
 
+## Modes
+
+The load screen offers **Prized Game** (default — the full hotseat build described below) and
+**Campaign mode** (design bible §22): a PvE on-ramp with **no player-owned properties** (board
+generation drops Yarn Emporium / Fish Market / Catnip Garden; Fountain, Inn, Blacksmith,
+Church and hazards stay), and **bots** filling the non-human seats. Per seat on the setup
+screen you tick "bot"; at least one human is required. Bots are a mid-tier, deliberately
+beatable driver in `app.js` (`botAct`): they roll, choose forks (with a 40% bias toward
+chasing the nearest opponent), mostly pass on proximity, occasionally propose alliances or
+attack when ahead on HP, and play highest-value cards in PvP. Human decisions (fork choice,
+alliance responses, PvP) still prompt normally — the bot driver only acts when a bot owns
+the pending decision.
+
 ## Scope cut for this slice (not design decisions — just sequencing)
 
 Out of scope until the loop itself is validated as fun:

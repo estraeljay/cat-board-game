@@ -4,9 +4,13 @@ import { TOKEN_ART, computeBlockBounds, tileBackgroundStyle } from "./assets.js"
 
 const PLAYER_COLORS = ["#e07a5f", "#81b29a", "#f2cc8f", "#3d5a80", "#9d8df1"];
 const DEFAULT_NAMES = ["Whiskers", "Mittens", "Tigerlily"];
+const BOT_NAMES = ["Clawdia", "Sir Pounce", "Biscuit", "Noodle", "Pixel"];
+let setupMode = "prized"; // "prized" | "campaign"
 let setupPlayerCount = DEFAULT_NAMES.length;
+let setupBots = [false, true, true, true, true]; // per-seat; only used in Campaign
 const FAST_TEST_MODE_MS = { roll: 3000, pvp: 3000 };
 const REAL_TIMER_MS = { roll: 20000, pvp: 30000 };
+const BOT_STEP_MS = 550;
 
 let game = null;
 let blockBounds = {}; // per-block-type bounding boxes, for slicing facade art across tiles
@@ -53,14 +57,21 @@ function classOptionsHtml(selected) {
     .join("");
 }
 
+function seatDefaultName(i) {
+  if (setupMode === "campaign" && setupBots[i]) return BOT_NAMES[i] || `Bot ${i + 1}`;
+  return DEFAULT_NAMES[i] || `Player ${i + 1}`;
+}
+
 function renderSetup() {
   const classKeys = Object.keys(CLASSES);
+  const campaign = setupMode === "campaign";
   const rows = Array.from({ length: setupPlayerCount }, (_, i) => {
-    const name = DEFAULT_NAMES[i] || `Player ${i + 1}`;
     const cls = classKeys[i % classKeys.length];
+    const isBot = campaign && setupBots[i];
     return `<div class="playerSetupRow">
-      <input type="text" class="setupName" value="${name}">
+      <input type="text" class="setupName" value="${seatDefaultName(i)}">
       <select class="setupClass">${classOptionsHtml(cls)}</select>
+      ${campaign ? `<label class="botToggle"><input type="checkbox" class="setupBot" data-i="${i}" ${isBot ? "checked" : ""}> bot</label>` : ""}
     </div>`;
   }).join("");
 
@@ -70,6 +81,13 @@ function renderSetup() {
       <h1>Cat Board Game — Vertical Slice</h1>
       <p class="note">Board movement, proximity, PvP battles, alliances, NPC locations/hazards, property cards, and the Coin economy.</p>
       <div class="setup">
+        <div class="modePick">
+          <button class="modeBtn ${!campaign ? "sel" : ""}" data-mode="prized">Prized Game</button>
+          <button class="modeBtn ${campaign ? "sel" : ""}" data-mode="campaign">Campaign mode</button>
+        </div>
+        <p class="note">${campaign
+          ? "PvE on-ramp: no player-owned properties, bots fill the other seats. Same board, dice, PvP and alliance rules."
+          : "Full game: player-owned properties, tolls, and the Coin economy. Hotseat / pass-and-play."}</p>
         <label>Players (2-5):</label>
         <div id="playerRows">${rows}</div>
         <div>
@@ -82,6 +100,18 @@ function renderSetup() {
     </div></div>
   `;
   wireChromeButtons();
+  document.querySelectorAll(".modeBtn").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      setupMode = btn.dataset.mode;
+      renderSetup();
+    })
+  );
+  document.querySelectorAll(".setupBot").forEach((cb) =>
+    cb.addEventListener("change", () => {
+      setupBots[Number(cb.dataset.i)] = cb.checked;
+      renderSetup();
+    })
+  );
   document.getElementById("addPlayerBtn").addEventListener("click", () => {
     setupPlayerCount = Math.min(5, setupPlayerCount + 1);
     renderSetup();
@@ -93,9 +123,16 @@ function renderSetup() {
   document.getElementById("startBtn").addEventListener("click", () => {
     const names = Array.from(document.querySelectorAll(".setupName")).map((el) => el.value.trim());
     const classes = Array.from(document.querySelectorAll(".setupClass")).map((el) => el.value);
+    const isBot = setupMode === "campaign"
+      ? Array.from({ length: names.length }, (_, i) => !!setupBots[i])
+      : names.map(() => false);
+    if (setupMode === "campaign" && isBot.every(Boolean)) {
+      alert("Campaign needs at least one human player — untick a bot.");
+      return;
+    }
     testMode = document.getElementById("testModeToggle").checked;
     try {
-      game = new Game(names, classes);
+      game = new Game(names, classes, { mode: setupMode, isBot });
       blockBounds = computeBlockBounds(game.board);
       window.__game = game; // debug hook
       window.__render = render; // debug hook
@@ -171,7 +208,7 @@ function renderPlayers() {
       const classLabel = CLASSES[p.className]?.label || p.className;
       return `<div class="playerRow ${p.alive ? "" : "dead"}">
         <span class="swatch" style="background:${PLAYER_COLORS[i % PLAYER_COLORS.length]}"></span>
-        <strong>${p.name}</strong> (${classLabel}) — HP ${p.hp}, ${p.coins} coins${p.alive ? "" : " (eliminated)"}${groupTag}${statusTags}
+        <strong>${p.name}</strong>${p.isBot ? ' <span class="botTag">bot</span>' : ""} (${classLabel}) — HP ${p.hp}, ${p.coins} coins${p.alive ? "" : " (eliminated)"}${groupTag}${statusTags}
       </div>`;
     })
     .join("")}</div>`;
@@ -186,11 +223,17 @@ function renderControls() {
   const p = g.current;
 
   if (g.phase === "game-over") {
-    return `<div class="controls"><h2>Game Over</h2><p>${g.log[g.log.length - 1]}</p></div>`;
+    let extra = "";
+    if (g.mode === "campaign") {
+      const human = g.players.find((pl) => !pl.isBot);
+      if (human) extra = `<p class="note">Campaign — ${human.name} carries forward ${human.coins} coins.</p>`;
+    }
+    return `<div class="controls"><h2>Game Over</h2><p>${g.log[g.log.length - 1]}</p>${extra}
+      <button id="newGameBtn">New game</button></div>`;
   }
 
   if (g.phase === "awaiting-roll") {
-    startTimer("roll", () => {
+    if (!p.isBot) startTimer("roll", () => {
       g.autoSkipTurn();
       render();
     });
@@ -370,6 +413,167 @@ function render() {
   `;
   wireEvents();
   wireChromeButtons();
+  scheduleBotStep();
+}
+
+// --- Campaign-mode bot driver -------------------------------------------
+// Mid-tier AI, deliberately beatable (design bible Section 18). Runs one
+// action per tick, then render() re-schedules if a bot still owns the
+// pending decision. Whoever "owns" a decision depends on the phase — for
+// alliance responses and PvP guards it's not necessarily game.current.
+
+let botTimer = null;
+let botErrRun = 0; // consecutive bot-step failures — bail out instead of hot-looping
+
+function botDeciderId() {
+  const g = game;
+  switch (g.phase) {
+    case "awaiting-roll":
+    case "awaiting-fork":
+    case "awaiting-proximity-target":
+    case "awaiting-proximity-action":
+    case "awaiting-post-withdrawal-alliance":
+      return g.current.id;
+    case "awaiting-alliance-response":
+    case "awaiting-leave-or-decline":
+      return g.pendingAllianceProposal?.toId ?? null;
+    case "in-pvp": {
+      const b = g.activeBattle;
+      if (!b) return null;
+      if (b.pendingWithdrawal) return b.pendingWithdrawal.opponentId;
+      if (b._awaitingGuard) return b.defenderId;
+      return b.attackerId;
+    }
+    default:
+      return null;
+  }
+}
+
+function scheduleBotStep() {
+  clearTimeout(botTimer);
+  if (!game || game.phase === "game-over") return;
+  const id = botDeciderId();
+  const p = id && game.players.find((x) => x.id === id);
+  if (!p || !p.isBot || !p.alive) return;
+  botTimer = setTimeout(() => {
+    try {
+      botAct();
+      botErrRun = 0;
+    } catch (e) {
+      botErrRun++;
+      console.error(`bot step failed (${botErrRun}):`, e);
+      if (botErrRun > 4) { game.log.push(`[bot driver stalled: ${e.message}]`); return; }
+    }
+    render();
+  }, testMode ? 200 : BOT_STEP_MS);
+}
+
+function nearestOpponent(g, from) {
+  const foes = g.players.filter(
+    (p) => p.alive && p.id !== from.id && (from.allianceId == null || p.allianceId !== from.allianceId)
+  );
+  let best = null;
+  let bestD = Infinity;
+  for (const f of foes) {
+    const d = Math.abs(f.r - from.r) + Math.abs(f.c - from.c);
+    if (d < bestD) { bestD = d; best = f; }
+  }
+  return best;
+}
+
+function botAct() {
+  const g = game;
+  const me = g.players.find((x) => x.id === botDeciderId());
+  if (!me) return;
+
+  switch (g.phase) {
+    case "awaiting-roll": {
+      if (g.canRestAtInn() && me.hp <= 55) g.restAtInn();
+      else g.rollDice();
+      return;
+    }
+    case "awaiting-fork": {
+      const opts = g.pendingMove.options;
+      const target = Math.random() < 0.4 ? nearestOpponent(g, me) : null;
+      let pick = opts[Math.floor(Math.random() * opts.length)];
+      if (target) {
+        pick = opts.reduce((a, b) => {
+          const da = Math.abs(a.r - target.r) + Math.abs(a.c - target.c);
+          const db = Math.abs(b.r - target.r) + Math.abs(b.c - target.c);
+          return db < da ? b : a;
+        });
+      }
+      g.chooseFork(pick);
+      return;
+    }
+    case "awaiting-proximity-target": {
+      const ids = g.pendingProximity.targets;
+      const players = ids.map((id) => g.players.find((p) => p.id === id));
+      const weakest = players.reduce((a, b) => (b.hp < a.hp ? b : a));
+      g.chooseProximityTarget(weakest.id);
+      return;
+    }
+    case "awaiting-proximity-action": {
+      const tId = g.pendingProximity.activeTargetId;
+      const t = g.players.find((p) => p.id === tId);
+      const declined = g.pendingProximity.declinedBy?.has(tId);
+      const allied = me.allianceId != null && me.allianceId === t.allianceId;
+      if (g.canHeal(tId) && Math.random() < 0.7) { g.chooseProximityAction("heal"); return; }
+      if (!allied && me.hp > t.hp + 10 && Math.random() < 0.35) { g.chooseProximityAction("pvp"); return; }
+      if (!allied && me.allianceId == null && !declined && Math.random() < 0.15) { g.chooseProximityAction("alliance"); return; }
+      g.chooseProximityAction("nothing");
+      return;
+    }
+    case "awaiting-alliance-response": {
+      g.respondAlliance(Math.random() < 0.55);
+      return;
+    }
+    case "awaiting-leave-or-decline": {
+      g.declineLeaveAlliance(); // bots stay in their current alliance
+      return;
+    }
+    case "awaiting-post-withdrawal-alliance": {
+      g.skipPostWithdrawalAlliance();
+      return;
+    }
+    case "in-pvp": {
+      const b = g.activeBattle;
+      if (!b) return;
+      if (b.pendingWithdrawal) {
+        const meState = b.players[me.id];
+        b.respondWithdrawal(meState.hp < 25 ? Math.random() < 0.5 : Math.random() < 0.35);
+        if (b.phase === "finished") g.finishPvpIfOver();
+        return;
+      }
+      if (b._awaitingGuard) {
+        const guards = b.players[me.id].hand.filter((c) => c.type === "guard");
+        const incoming = b._pendingAttackCard?.value ?? 0;
+        let pick = null;
+        if (guards.length) {
+          pick = incoming >= 6
+            ? guards.reduce((a, c) => (c.value > a.value ? c : a))
+            : guards.reduce((a, c) => (c.value < a.value ? c : a));
+        }
+        b.respondGuard(pick ? pick.id : null);
+        if (b.phase === "finished") g.finishPvpIfOver();
+        return;
+      }
+      // attacker's move
+      const meState = b.players[me.id];
+      if (meState.hp < 22 && !b.withdrawalUsed[me.id] && Math.random() < 0.4) {
+        b.requestWithdrawal(me.id);
+        return;
+      }
+      const attacks = meState.hand.filter((c) => c.type === "attack");
+      if (attacks.length) {
+        const best = attacks.reduce((a, c) => (c.value > a.value ? c : a));
+        b.playAttack(best.id);
+      } else {
+        b.passAttackNoCard();
+      }
+      return;
+    }
+  }
 }
 
 function wireChromeButtons() {
@@ -401,6 +605,12 @@ document.addEventListener("fullscreenchange", onViewportChange);
 
 function wireEvents() {
   const g = game;
+  document.getElementById("newGameBtn")?.addEventListener("click", () => {
+    clearTimeout(botTimer);
+    clearTimer();
+    game = null;
+    renderSetup();
+  });
   document.getElementById("rollBtn")?.addEventListener("click", () => {
     g.rollDice();
     render();

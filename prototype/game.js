@@ -44,15 +44,22 @@ function shuffleArray(items) {
 }
 
 export class Game {
-  constructor(playerNames, playerClasses) {
+  // options: { mode: "prized" | "campaign", isBot: boolean[] }
+  //  - "campaign" (design bible Section 22): PvE on-ramp. No player-owned
+  //    properties, no Prize Cards, bots fill the non-human seats. Same core
+  //    loop, same 3-alliance / 2-winner caps.
+  constructor(playerNames, playerClasses, options = {}) {
     if (playerNames.length < 2 || playerNames.length > 5) {
       throw new Error("Cat Board Game supports 2-5 players (Section 18)");
     }
-    this.board = generateBoard();
+    this.mode = options.mode === "campaign" ? "campaign" : "prized";
+    const isBot = options.isBot || [];
+    this.board = generateBoard(Math.random, { includePlayerProperties: this.mode !== "campaign" });
     const center = this.board.townCenter.center;
     this.players = playerNames.map((name, i) => ({
       id: `p${i}`,
       name,
+      isBot: !!isBot[i], // Campaign: bots play these seats; mid-tier, meant to be beatable
       className: playerClasses?.[i] || CLASS_KEYS[Math.floor(Math.random() * CLASS_KEYS.length)],
       r: center.r,
       c: center.c,

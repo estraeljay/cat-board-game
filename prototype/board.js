@@ -169,11 +169,16 @@ function wouldCreate2x2Open(pathSet, r, c) {
   return false;
 }
 
-export function generateBoard(seedRandom = Math.random) {
+export function generateBoard(seedRandom = Math.random, { includePlayerProperties = true } = {}) {
   const townCenterBox = { top: TC_MIN, left: TC_MIN, w: TC_MAX - TC_MIN + 1, h: TC_MAX - TC_MIN + 1 };
   const placedBoxes = [townCenterBox];
   const locations = [];
-  for (const spec of LOCATION_SPECS) {
+  // Campaign mode has no player-owned properties (design bible Section 22) — only
+  // the Fountain, Inn/Blacksmith/Church, and hazards.
+  const specs = includePlayerProperties
+    ? LOCATION_SPECS
+    : LOCATION_SPECS.filter((s) => !PROPERTY_TYPES.has(s.type));
+  for (const spec of specs) {
     const loc = placeLocation(spec.type, spec.w, spec.h, placedBoxes, seedRandom);
     locations.push(loc);
     placedBoxes.push(loc.box);
