@@ -33,6 +33,7 @@ import { CLASSES, PROPERTY_DECKS, PROPERTY_TOLL, STARTING_COINS } from "./conten
 
 const PLACEHOLDER_STATS = { attack: 15, defense: 12 }; // stand-in for equipment-derived stats; classes.md gave card decks, not base stats, so every class shares this base for now
 const CLASS_KEYS = Object.keys(CLASSES);
+const DIR_DELTA = { up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1] }; // grid is row-major
 
 function shuffleArray(items) {
   const arr = items.slice();
@@ -88,8 +89,9 @@ export class Game {
     this.propertyOwner = {};
     for (const type of PROPERTY_TYPES) this.propertyOwner[type] = null;
     this.currentPlayerIndex = 0;
-    this.phase = "awaiting-roll"; // awaiting-roll | awaiting-fork | awaiting-proximity-target |
+    this.phase = "awaiting-roll"; // awaiting-roll | awaiting-move | awaiting-proximity-target |
                                   // awaiting-proximity-action | awaiting-alliance-response |
+                                  // awaiting-leave-or-decline | awaiting-post-withdrawal-alliance |
                                   // in-pvp | game-over
     this.pendingMove = null;
     this.pendingProximity = null; // { targets: [ids], activeTargetId }
@@ -121,11 +123,11 @@ export class Game {
 
   // --- Turn: roll + move -----------------------------------------------
 
-  // Movement revision (2026-08-28): the roll sets a MAXIMUM. The player moves the
-  // first tile automatically, then chooses "continue" or "stop" after each tile
-  // (phase "awaiting-step") until they hit the max or stop — so they can land
+  // Movement revision (2026-08-28): the roll sets a MAXIMUM. The player then
+  // walks the path one tile at a time — arrow keys / WASD to move, Enter to
+  // stop (phase "awaiting-move") — up to that maximum, so they can land
   // exactly on a property/special entry within range. Snared (odd check die)
-  // still forces exactly 1 tile with no choice.
+  // still forces exactly 1 tile.
   rollDice() {
     if (this.phase !== "awaiting-roll") throw new Error(`Cannot roll during phase ${this.phase}`);
     const player = this.current;
@@ -148,8 +150,19 @@ export class Game {
       this._pushLog(`${player.name} rolls a ${maxDistance} — may move up to ${maxDistance} tile${maxDistance === 1 ? "" : "s"}.`);
     }
     this.pendingMove = { stepsRemaining: maxDistance, maxDistance, moved: 0, cameFrom: null, forced };
-    this._advanceMovement();
+    this.phase = "awaiting-move";
     return maxDistance;
+  }
+
+  // Tiles the active player may step to this turn: walkable orthogonal
+  // neighbours, minus the tile just came from (no U-turns) unless it's a dead end.
+  moveOptions() {
+    if (this.phase !== "awaiting-move") return [];
+    const player = this.current;
+    const all = this.board.getWalkableNeighbors(player.r, player.c);
+    const cameFrom = this.pendingMove.cameFrom;
+    const forward = all.filter((n) => !(cameFrom && n.r === cameFrom.r && n.c === cameFrom.c));
+    return forward.length ? forward : all;
   }
 
   // While standing on an Inn entry tile, a player may rest instead of rolling.
@@ -307,57 +320,35 @@ export class Game {
     this._applyHazard(player, player.r, player.c); // hazards trigger on pass-through, not just landing
   }
 
-  // After each single tile moved: if steps remain and the move isn't forced,
-  // pause on "awaiting-step" so the player can stop exactly where they want
-  // (movement revision 2026-08-28). Otherwise keep going / resolve the landing.
-  _advanceMovement() {
+  // Step one tile in a compass direction ("up"/"down"/"left"/"right").
+  // Returns true if the move happened, false if that direction is a wall / off
+  // the path / a disallowed U-turn (the UI just ignores a false).
+  moveDir(dir) {
+    if (this.phase !== "awaiting-move") throw new Error(`Not moving (phase ${this.phase})`);
+    const delta = DIR_DELTA[dir];
+    if (!delta) throw new Error(`Bad direction: ${dir}`);
     const player = this.current;
-    while (this.pendingMove.stepsRemaining > 0) {
-      const neighbors = this.board.getWalkableNeighbors(player.r, player.c);
-      const cameFrom = this.pendingMove.cameFrom;
-      let options = neighbors.filter((n) => !(cameFrom && n.r === cameFrom.r && n.c === cameFrom.c));
-      if (options.length === 0) options = neighbors; // dead end: forced to reverse
-
-      if (options.length > 1) {
-        this.phase = "awaiting-fork";
-        this.pendingMove.options = options;
-        return; // pause for player choice
-      }
-
-      this._stepTo(options[0]);
-      if (this.pendingMove.stepsRemaining > 0 && !this.pendingMove.forced) {
-        this.phase = "awaiting-step"; // pause: continue or stop
-        return;
-      }
+    const target = { r: player.r + delta[0], c: player.c + delta[1] };
+    const opts = this.moveOptions();
+    if (!opts.some((o) => o.r === target.r && o.c === target.c)) return false;
+    this._stepTo(target);
+    if (this.pendingMove.stepsRemaining === 0 || this.pendingMove.forced) {
+      this._finishMove();
     }
-    this.pendingMove = null;
-    this._resolveLanding();
+    return true;
   }
 
-  chooseFork(option) {
-    if (this.phase !== "awaiting-fork") throw new Error(`Not awaiting a fork choice (phase ${this.phase})`);
-    const valid = this.pendingMove.options.some((o) => o.r === option.r && o.c === option.c);
-    if (!valid) throw new Error("Chosen direction is not a valid path from here");
-    this.pendingMove.options = null;
-    this._stepTo(option);
-    if (this.pendingMove.stepsRemaining > 0 && !this.pendingMove.forced) {
-      this.phase = "awaiting-step";
-      return;
-    }
-    this.pendingMove = null;
-    this._resolveLanding();
+  // End movement now (Enter / "Stop here"). Must have moved at least 1 tile.
+  endMove() {
+    if (this.phase !== "awaiting-move") throw new Error(`Not moving (phase ${this.phase})`);
+    if (this.pendingMove.moved < 1) return false;
+    this._finishMove();
+    return true;
   }
 
-  // "awaiting-step": keep moving.
-  continueMove() {
-    if (this.phase !== "awaiting-step") throw new Error(`Not paused mid-move (phase ${this.phase})`);
-    this.phase = "awaiting-roll"; // placeholder so downstream checks don't trip (same trick as chooseFork)
-    this._advanceMovement();
-  }
-
-  // "awaiting-step": stop here and resolve the landing.
-  stopMove() {
-    if (this.phase !== "awaiting-step") throw new Error(`Not paused mid-move (phase ${this.phase})`);
+  _finishMove() {
+    const n = this.pendingMove.moved;
+    this._pushLog(`${this.current.name} moves ${n} tile${n === 1 ? "" : "s"}.`);
     this.pendingMove = null;
     this._resolveLanding();
   }

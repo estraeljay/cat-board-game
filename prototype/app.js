@@ -156,6 +156,12 @@ function boardCellPx(size) {
 function renderBoard() {
   const b = game.board;
   const cell = boardCellPx(b.size);
+  // During movement, highlight the active player's tile and the tiles they may step to.
+  const moving = game.phase === "awaiting-move";
+  const moveOptSet = moving
+    ? new Set(game.moveOptions().map((o) => `${o.r},${o.c}`))
+    : null;
+  const hereKey = moving ? `${game.current.r},${game.current.c}` : null;
   let html = `<div class="board" style="--cell:${cell}px; grid-template-columns: repeat(${b.size}, var(--cell));">`;
   for (let r = 0; r < b.size; r++) {
     for (let c = 0; c < b.size; c++) {
@@ -190,6 +196,10 @@ function renderBoard() {
       let extraClass = entry ? ` entry-${entry}` : hazard ? ` hazard-${hazard}` : "";
       if (isTcDoor) extraClass += " tc-door";
       if (isTcDoorOutside) extraClass += " entry-townCenter";
+      if (moving) {
+        if (`${r},${c}` === hereKey) extraClass += " moveHere";
+        else if (moveOptSet.has(`${r},${c}`)) extraClass += " moveOpt";
+      }
       const ownerId = entry && game.propertyOwner && entry in game.propertyOwner ? game.propertyOwner[entry] : undefined;
       const ownerName = ownerId ? game.players.find((p) => p.id === ownerId)?.name : ownerId === null ? "unclaimed" : null;
       let title = entry ? `${entry} entrance${ownerName ? ` (${ownerName})` : ""}` : hazard ? `${hazard} hazard` : "";
@@ -248,30 +258,29 @@ function renderControls() {
     </div>`;
   }
 
-  if (g.phase === "awaiting-fork") {
-    const from = { r: p.r, c: p.c };
-    return `<div class="controls">
-      <h2>${p.name} — choose a direction</h2>
-      ${g.pendingMove.options
-        .map((o) => `<button class="forkBtn" data-r="${o.r}" data-c="${o.c}">${dirLabel(from, o)}</button>`)
-        .join("")}
-    </div>`;
-  }
-
-  if (g.phase === "awaiting-step") {
-    const left = g.pendingMove.stepsRemaining;
+  if (g.phase === "awaiting-move") {
+    const dirOf = (o) => (o.r < p.r ? "up" : o.r > p.r ? "down" : o.c < p.c ? "left" : "right");
+    const DLABEL = { up: "↑ North", down: "↓ South", left: "← West", right: "→ East" };
+    const DKEY = { up: "W / ↑", down: "S / ↓", left: "A / ←", right: "D / →" };
+    const opts = g.moveOptions();
     const entry = g.board.entryTypeAt(p.r, p.c);
     const hazard = g.board.hazardAt(p.r, p.c);
-    const hereNote = entry
-      ? `<p>You're on the <b>${entry}</b> entry tile.</p>`
-      : hazard
-      ? `<p>You're on a <b>${hazard}</b> hazard.</p>`
+    const hereNote = g.pendingMove.moved
+      ? entry
+        ? `<p>You're on the <b>${entry}</b> entry tile.</p>`
+        : hazard
+        ? `<p>You're on a <b>${hazard}</b> hazard.</p>`
+        : ""
       : "";
+    const canStop = g.pendingMove.moved >= 1 && !g.pendingMove.forced;
     return `<div class="controls">
       <h2>${p.name} — moved ${g.pendingMove.moved} of up to ${g.pendingMove.maxDistance}</h2>
       ${hereNote}
-      <button id="continueMoveBtn">Continue (${left} left)</button>
-      <button id="stopMoveBtn">Stop here</button>
+      <p class="muted">Arrow keys or WASD to move${canStop ? " · Enter to stop" : ""}${g.pendingMove.forced ? " · snared: 1 tile only" : ""}</p>
+      <div class="moveBtns">
+        ${opts.map((o) => { const d = dirOf(o); return `<button class="moveDirBtn" data-dir="${d}">${DLABEL[d]} <span class="kbd">${DKEY[d]}</span></button>`; }).join("")}
+      </div>
+      ${canStop ? `<button id="endMoveBtn">Stop here <span class="kbd">Enter</span></button>` : ""}
     </div>`;
   }
 
@@ -503,8 +512,7 @@ function botDeciderId() {
   const g = game;
   switch (g.phase) {
     case "awaiting-roll":
-    case "awaiting-fork":
-    case "awaiting-step":
+    case "awaiting-move":
     case "awaiting-proximity-target":
     case "awaiting-proximity-action":
     case "awaiting-post-withdrawal-alliance":
@@ -567,8 +575,17 @@ function botAct() {
       else g.rollDice();
       return;
     }
-    case "awaiting-fork": {
-      const opts = g.pendingMove.options;
+    case "awaiting-move": {
+      // Stop if we've moved and we're on something useful; else pick a direction
+      // (40% chase the nearest opponent, else wander).
+      if (g.pendingMove.moved >= 1 && !g.pendingMove.forced) {
+        const here = g.board.entryTypeAt(me.r, me.c);
+        const useful = here && here !== "church"; // bots don't track poison well
+        if (useful && Math.random() < 0.65) { g.endMove(); return; }
+        if (Math.random() < 0.12) { g.endMove(); return; }
+      }
+      const opts = g.moveOptions();
+      if (opts.length === 0) { g.endMove(); return; }
       const target = Math.random() < 0.4 ? nearestOpponent(g, me) : null;
       let pick = opts[Math.floor(Math.random() * opts.length)];
       if (target) {
@@ -578,16 +595,8 @@ function botAct() {
           return db < da ? b : a;
         });
       }
-      g.chooseFork(pick);
-      return;
-    }
-    case "awaiting-step": {
-      // Stop if standing on something useful; otherwise usually keep going.
-      const entry = g.board.entryTypeAt(me.r, me.c);
-      const useful = entry && entry !== "church"; // (bots don't track poison well)
-      if (useful && Math.random() < 0.65) { g.stopMove(); return; }
-      if (Math.random() < 0.15) { g.stopMove(); return; }
-      g.continueMove();
+      const dir = pick.r < me.r ? "up" : pick.r > me.r ? "down" : pick.c < me.c ? "left" : "right";
+      g.moveDir(dir);
       return;
     }
     case "awaiting-proximity-target": {
@@ -694,6 +703,31 @@ function onViewportChange() {
 window.addEventListener("resize", onViewportChange);
 document.addEventListener("fullscreenchange", onViewportChange);
 
+// Keyboard movement: arrow keys / WASD to step, Enter to stop (phase "awaiting-move").
+const MOVE_KEYS = {
+  arrowup: "up", w: "up",
+  arrowdown: "down", s: "down",
+  arrowleft: "left", a: "left",
+  arrowright: "right", d: "right",
+};
+window.addEventListener("keydown", (e) => {
+  if (!game || game.phase !== "awaiting-move" || game.current.isBot) return;
+  const t = e.target;
+  if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+  const k = e.key.toLowerCase();
+  let acted = false;
+  try {
+    if (k === "enter") acted = game.endMove() !== false;
+    else if (MOVE_KEYS[k]) acted = game.moveDir(MOVE_KEYS[k]) !== false;
+  } catch (_) {
+    acted = false;
+  }
+  if (acted || k === "enter" || MOVE_KEYS[k]) {
+    e.preventDefault(); // stop arrow-key page scroll even on an ignored (walled) press
+    if (acted) render();
+  }
+});
+
 function wireEvents() {
   const g = game;
   document.getElementById("newGameBtn")?.addEventListener("click", () => {
@@ -714,18 +748,14 @@ function wireEvents() {
     g.chooseProximityAction("heal");
     render();
   });
-  document.querySelectorAll(".forkBtn").forEach((btn) =>
+  document.querySelectorAll(".moveDirBtn").forEach((btn) =>
     btn.addEventListener("click", () => {
-      g.chooseFork({ r: Number(btn.dataset.r), c: Number(btn.dataset.c) });
+      g.moveDir(btn.dataset.dir);
       render();
     })
   );
-  document.getElementById("continueMoveBtn")?.addEventListener("click", () => {
-    g.continueMove();
-    render();
-  });
-  document.getElementById("stopMoveBtn")?.addEventListener("click", () => {
-    g.stopMove();
+  document.getElementById("endMoveBtn")?.addEventListener("click", () => {
+    g.endMove();
     render();
   });
   document.querySelectorAll(".targetBtn").forEach((btn) =>
