@@ -10,11 +10,14 @@ That file is the full brief — this README is just the file-drop contract.
 
 ## Format
 
-- **PNG, transparent background** where the shape isn't a full square (characters, props,
+- **`.svg` or `.png`.** Batch 1 was generated with Recraft V4.1 (vector mode) → `.svg`,
+  which scales cleanly at any tile size. If you swap in raster art, use `.png` and change
+  the one `EXT` constant at the top of `prototype/assets.js` from `"svg"` to `"png"`.
+- Transparent / no background where the shape isn't a full square (characters, props,
   facades). Full-square tiles (path, obstacle, swamp) can be opaque.
-- Single-tile sprites: **512×512** is plenty. Multi-tile block facades: **square**, sized
-  to the block (e.g. a 3×3 property → one 1536×1536 image; the prototype slices it across
-  the 9 tiles). Town Center is 5×5 → one 2560×2560 image.
+- Multi-tile block facades: **square**, drawn as if seen from directly overhead — the
+  prototype slices one image across the block's footprint (3×3 property = 9 tiles, 5×5 Town
+  Center = 25). Single-tile sprites: square, 512×512+ for raster.
 - Keep filenames **exactly** as listed below (lowercase, hyphenated). The prototype looks
   for these literal paths.
 
