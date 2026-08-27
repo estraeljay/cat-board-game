@@ -258,6 +258,23 @@ function renderControls() {
     </div>`;
   }
 
+  if (g.phase === "awaiting-step") {
+    const left = g.pendingMove.stepsRemaining;
+    const entry = g.board.entryTypeAt(p.r, p.c);
+    const hazard = g.board.hazardAt(p.r, p.c);
+    const hereNote = entry
+      ? `<p>You're on the <b>${entry}</b> entry tile.</p>`
+      : hazard
+      ? `<p>You're on a <b>${hazard}</b> hazard.</p>`
+      : "";
+    return `<div class="controls">
+      <h2>${p.name} — moved ${g.pendingMove.moved} of up to ${g.pendingMove.maxDistance}</h2>
+      ${hereNote}
+      <button id="continueMoveBtn">Continue (${left} left)</button>
+      <button id="stopMoveBtn">Stop here</button>
+    </div>`;
+  }
+
   if (g.phase === "awaiting-proximity-target") {
     const targets = g.pendingProximity.targets.map((id) => g.players.find((pl) => pl.id === id));
     return `<div class="controls">
@@ -487,6 +504,7 @@ function botDeciderId() {
   switch (g.phase) {
     case "awaiting-roll":
     case "awaiting-fork":
+    case "awaiting-step":
     case "awaiting-proximity-target":
     case "awaiting-proximity-action":
     case "awaiting-post-withdrawal-alliance":
@@ -561,6 +579,15 @@ function botAct() {
         });
       }
       g.chooseFork(pick);
+      return;
+    }
+    case "awaiting-step": {
+      // Stop if standing on something useful; otherwise usually keep going.
+      const entry = g.board.entryTypeAt(me.r, me.c);
+      const useful = entry && entry !== "church"; // (bots don't track poison well)
+      if (useful && Math.random() < 0.65) { g.stopMove(); return; }
+      if (Math.random() < 0.15) { g.stopMove(); return; }
+      g.continueMove();
       return;
     }
     case "awaiting-proximity-target": {
@@ -693,6 +720,14 @@ function wireEvents() {
       render();
     })
   );
+  document.getElementById("continueMoveBtn")?.addEventListener("click", () => {
+    g.continueMove();
+    render();
+  });
+  document.getElementById("stopMoveBtn")?.addEventListener("click", () => {
+    g.stopMove();
+    render();
+  });
   document.querySelectorAll(".targetBtn").forEach((btn) =>
     btn.addEventListener("click", () => {
       g.chooseProximityTarget(btn.dataset.id);

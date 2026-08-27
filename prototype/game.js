@@ -121,28 +121,35 @@ export class Game {
 
   // --- Turn: roll + move -----------------------------------------------
 
+  // Movement revision (2026-08-28): the roll sets a MAXIMUM. The player moves the
+  // first tile automatically, then chooses "continue" or "stop" after each tile
+  // (phase "awaiting-step") until they hit the max or stop — so they can land
+  // exactly on a property/special entry within range. Snared (odd check die)
+  // still forces exactly 1 tile with no choice.
   rollDice() {
     if (this.phase !== "awaiting-roll") throw new Error(`Cannot roll during phase ${this.phase}`);
     const player = this.current;
     player.turnNumber++;
-    let distance;
+    let maxDistance;
+    let forced = false;
     if (player.snared) {
       player.snared = false;
       const check = 1 + Math.floor(Math.random() * 6);
       if (check % 2 === 0) {
-        distance = 1 + Math.floor(Math.random() * 6);
-        this._pushLog(`${player.name} is snared by thorn vines — check roll ${check} (even): moves normally, rolls a ${distance}.`);
+        maxDistance = 1 + Math.floor(Math.random() * 6);
+        this._pushLog(`${player.name} is snared by thorn vines — check roll ${check} (even): moves normally, up to ${maxDistance}.`);
       } else {
-        distance = 1;
-        this._pushLog(`${player.name} is snared by thorn vines — check roll ${check} (odd): can only move 1 tile.`);
+        maxDistance = 1;
+        forced = true;
+        this._pushLog(`${player.name} is snared by thorn vines — check roll ${check} (odd): forced to move exactly 1 tile.`);
       }
     } else {
-      distance = 1 + Math.floor(Math.random() * 6); // placeholder: single d6
-      this._pushLog(`${player.name} rolls a ${distance}.`);
+      maxDistance = 1 + Math.floor(Math.random() * 6); // placeholder: single d6, used as a ceiling
+      this._pushLog(`${player.name} rolls a ${maxDistance} — may move up to ${maxDistance} tile${maxDistance === 1 ? "" : "s"}.`);
     }
-    this.pendingMove = { stepsRemaining: distance, cameFrom: null };
+    this.pendingMove = { stepsRemaining: maxDistance, maxDistance, moved: 0, cameFrom: null, forced };
     this._advanceMovement();
-    return distance;
+    return maxDistance;
   }
 
   // While standing on an Inn entry tile, a player may rest instead of rolling.
@@ -290,6 +297,19 @@ export class Game {
     return !!activeGroup && activeGroup.members.has(targetId);
   }
 
+  _stepTo(next) {
+    const player = this.current;
+    this.pendingMove.cameFrom = { r: player.r, c: player.c };
+    player.r = next.r;
+    player.c = next.c;
+    this.pendingMove.stepsRemaining--;
+    this.pendingMove.moved++;
+    this._applyHazard(player, player.r, player.c); // hazards trigger on pass-through, not just landing
+  }
+
+  // After each single tile moved: if steps remain and the move isn't forced,
+  // pause on "awaiting-step" so the player can stop exactly where they want
+  // (movement revision 2026-08-28). Otherwise keep going / resolve the landing.
   _advanceMovement() {
     const player = this.current;
     while (this.pendingMove.stepsRemaining > 0) {
@@ -304,12 +324,11 @@ export class Game {
         return; // pause for player choice
       }
 
-      const next = options[0];
-      this.pendingMove.cameFrom = { r: player.r, c: player.c };
-      player.r = next.r;
-      player.c = next.c;
-      this.pendingMove.stepsRemaining--;
-      this._applyHazard(player, player.r, player.c); // hazards trigger on pass-through, not just landing
+      this._stepTo(options[0]);
+      if (this.pendingMove.stepsRemaining > 0 && !this.pendingMove.forced) {
+        this.phase = "awaiting-step"; // pause: continue or stop
+        return;
+      }
     }
     this.pendingMove = null;
     this._resolveLanding();
@@ -317,16 +336,30 @@ export class Game {
 
   chooseFork(option) {
     if (this.phase !== "awaiting-fork") throw new Error(`Not awaiting a fork choice (phase ${this.phase})`);
-    const player = this.current;
     const valid = this.pendingMove.options.some((o) => o.r === option.r && o.c === option.c);
     if (!valid) throw new Error("Chosen direction is not a valid path from here");
-    this.pendingMove.cameFrom = { r: player.r, c: player.c };
-    player.r = option.r;
-    player.c = option.c;
-    this.pendingMove.stepsRemaining--;
-    this._applyHazard(player, player.r, player.c);
-    this.phase = "awaiting-roll"; // placeholder so _advanceMovement's phase checks don't trip
+    this.pendingMove.options = null;
+    this._stepTo(option);
+    if (this.pendingMove.stepsRemaining > 0 && !this.pendingMove.forced) {
+      this.phase = "awaiting-step";
+      return;
+    }
+    this.pendingMove = null;
+    this._resolveLanding();
+  }
+
+  // "awaiting-step": keep moving.
+  continueMove() {
+    if (this.phase !== "awaiting-step") throw new Error(`Not paused mid-move (phase ${this.phase})`);
+    this.phase = "awaiting-roll"; // placeholder so downstream checks don't trip (same trick as chooseFork)
     this._advanceMovement();
+  }
+
+  // "awaiting-step": stop here and resolve the landing.
+  stopMove() {
+    if (this.phase !== "awaiting-step") throw new Error(`Not paused mid-move (phase ${this.phase})`);
+    this.pendingMove = null;
+    this._resolveLanding();
   }
 
   // --- Landing / proximity ----------------------------------------------

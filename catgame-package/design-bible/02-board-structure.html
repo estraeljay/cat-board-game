@@ -64,6 +64,11 @@
     </div>
 
     <div class="note">
+      <span class="tag">Amendment — design revision 2026-08-28</span>
+      Movement distance is now <b>roll-a-maximum</b>: the die is a ceiling and the player moves 1..N tiles of their choice, stopping where they like (see Section 01 / <code>MASTER-DATA-SHEET.md</code> §2). Path-following and active fork choice are unchanged; the chasing dynamic is retained because the roll still caps how far you can go.
+    </div>
+
+    <div class="note">
       <span class="tag">Ripple effect worth watching</span>
       The Section 01 proximity check (distance 0–1, 8-directional) still works mechanically, but will trigger less often now — most of the 8 surrounding tiles around any given path tile will typically be obstacles, not open ground. This isn't a contradiction, just a natural consequence: PvP/alliance encounters will now cluster more tightly along the path network itself.
     </div>

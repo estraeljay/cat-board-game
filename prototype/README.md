@@ -108,7 +108,7 @@ On a player's own first 2 turns, they can't initiate PvP/alliance/heal against a
 
 ## Interpretations of ambiguous/underspecified rules (flagged, not invented silently)
 
-- **Dice**: the locked design never specifies dice type/count. Using a single d6 as the simplest placeholder.
+- **Dice / movement (revised 2026-08-28)**: the roll (still a placeholder d6) now sets a **maximum**. The player moves the first tile automatically, then chooses **Continue / Stop here** after each tile (`awaiting-step` phase) until they hit the max or stop — so you can land exactly on a property/special entry within range. Snared (odd check die) still forces exactly 1 tile. See `MASTER-DATA-SHEET.md` §2.
 - **20s roll timer**: read literally as gating only the roll itself (design's own wording: "Unused = turn is auto-skipped entirely"). Fork choice and the proximity menu are not separately timed.
 - **30s PvP turn timer**: only auto-resolves the *defender's* guard decision on expiry (defaults to no guard — a clean, well-defined no-action state). The *attacker's* decision is always manual, whether or not they hold an attack card — there's no clean "force-skip while holding a playable card" behavior to fall back to, and per direction, ending a no-attack-card turn is a deliberate manual "Pass" click, never auto-forced by the timer.
 - **Attacker with no attack card in hand**: not covered by the locked design. Added `PvpBattle.passAttackNoCard()` — the turn passes with no attack, same reasoning as the timer auto-skip.

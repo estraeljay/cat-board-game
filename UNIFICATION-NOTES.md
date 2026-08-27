@@ -129,6 +129,40 @@ what's being built. The board game only ever "rolls" a single d6 to move. Change
 
 ---
 
+## Design revisions — 2026-08-28 (later, owner decision — edits to locked sections)
+
+These are deliberate design changes, not reconciliation. Both edit sections previously
+marked LOCKED.
+
+### 1. Movement: roll a maximum, move 1..N of your choice
+
+- **Was:** roll a d6, move *exactly* that many tiles along the path.
+- **Now:** the roll sets an **upper bound**; the player moves **1 up to N tiles** and stops
+  where they like within range (still choosing direction at forks; must move ≥1 if a legal
+  move exists). Snared (odd check die) still forces exactly 1.
+- **Why:** landing precisely on a property / special-location entry tile was a hassle under
+  fixed distance. Randomness is kept (the die still caps range), so the chasing /
+  encounter / alliance-betrayal tension from Section 0/2/3 is preserved.
+- **Touches:** `MASTER-DATA-SHEET.md` §2, §3 (+ all synced copies); amendment notes on
+  `design-bible/01-core-game-loop.html` and `02-board-structure.html`.
+- **Implemented in the prototype:** `game.js` (new `chooseDistance` step + `awaiting-distance`
+  phase), `app.js` (distance picker UI + bot), this pass.
+
+### 2. Property leveling: optional Gem accelerator
+
+- **Kept:** the cumulative-Coin-earned gate *and* the Fel cost table (750 / 1,750 / 3,500 /
+  6,000). Fel was **not** removed from leveling — doing so would leave only one Fel sink and
+  risk Fel inflation, and would make property power pay-to-win.
+- **Added:** the owner may spend a set **Gem** amount to **waive the Coin threshold** for one
+  level-up; the Fel cost is still paid. Money accelerates, doesn't gate.
+- **Touches:** `MASTER-DATA-SHEET.md` §11, §12, appendix (+ synced copies); amendment note on
+  `design-bible/11-property-leveling.html`.
+- **Not in the prototype** — the prototype has no Fel/Gem economy yet (properties are claimed
+  free). Design-only for now.
+- 🔓 The Gem amount per tier is open, blocked on the Gems↔Fel rate.
+
+---
+
 ## Known remaining inconsistencies (deliberately NOT fixed here)
 
 - **`catgame-package.zip`** (root) and **`index.html`** (root, a bare copy of

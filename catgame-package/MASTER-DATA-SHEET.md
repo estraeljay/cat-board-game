@@ -8,6 +8,10 @@ Status at last update: **rules layer essentially complete.** Remaining work is (
 
 **Unification pass — 2026-08-28.** Reconciled this sheet with the JS prototype and the Unity port. Changes: cat classes locked to exactly **3** (Knight/Mage/Priest); four prototype mechanics promoted to canon — **board hazard tiles** (Poison Swamp, Thorn Vines), the **ally-Heal proximity option**, and the **opening 2-turn grace period** (all detailed below). The four named properties (Fountain, Yarn Emporium, Fish Market, Catnip Garden) are a **first-art-pass / playtest stand-in** layered on the generic player-placed property system — they are not a design change to Section 10. Full change log: `UNIFICATION-NOTES.md`.
 
+**Design revisions — 2026-08-28 (owner decision, edits locked sections):**
+1. **Movement — roll a maximum, move 1..N of your choice** (Section 2 / Section 3). The die is a ceiling, not an exact step count; the player stops where they like within range. Fixes property-visit friction; movement randomness retained. Implemented in the prototype.
+2. **Property leveling — optional Gem accelerator** (Section 11): spend Gems to waive the cumulative-Coin threshold for one level-up; the Fel cost is still paid. Fel stays a leveling sink; money accelerates, doesn't gate.
+
 ---
 
 ## 0. Game Overview
@@ -35,14 +39,16 @@ Two game modes exist: **Prized Game** (real stakes, variable entry fee, full eco
 
 ---
 
-## 2. Core Game Loop (Section 01 — LOCKED)
+## 2. Core Game Loop (Section 01 — LOCKED; movement resolution revised 2026-08-28)
 
-**Turn sequence:** Start Turn → Roll → Move along the path network for the rolled distance (choosing a direction at forks) → Resolve Landing Location → Check Proximity → optional proximity menu (pick target → PvP / Do Nothing / Propose Alliance / conditional Heal) → End Turn.
+**Turn sequence:** Start Turn → Roll a **maximum** distance → Move **1 to that many** tiles along the path network (player's choice, choosing a direction at forks and choosing when to stop) → Resolve Landing Location → Check Proximity → optional proximity menu (pick target → PvP / Do Nothing / Propose Alliance / conditional Heal) → End Turn.
 
+- **Movement is roll-a-maximum, move-your-choice (revised 2026-08-28).** The roll (a d6 in the prototype — dice type still not otherwise locked) sets an *upper bound*. The player then moves **1 up to that many** tiles and may **stop on any tile within range**, including partway through the roll. Rationale: under fixed "move exactly the rolled number," reliably landing on a specific property/special-location entry tile was a hassle; letting the player choose the distance removes that friction. The randomness is deliberately kept — you still can't guarantee reaching a fleeing player or dodging every encounter, so the chasing/alliance/betrayal tension (Section 0, Section 3) is preserved. A player must move **at least 1 tile** if any legal move exists (no "stay put").
+- **Snared interaction (Section 5):** if the check die comes up odd, the player is forced to move **exactly 1 tile** that turn (no distance choice). Even → normal roll-a-maximum.
 - **20-second timer** per normal turn. Unused = turn is **auto-skipped entirely** (no roll, no move).
 - Cards (any type) can only be used after landing, on the player's own turn — never before rolling, never reactively on someone else's turn.
 - Three card pools: **Property Deck** (visitor draws only — owner never draws), **Equipment cards** (the 8 gear slots), **PvP Deck** (Attack/Guard, used only inside a battle).
-- Passing through a property without stopping triggers nothing.
+- Passing through a property without stopping still triggers nothing — but since the player now chooses their stopping tile, "I couldn't stop there" is no longer a reason to miss a property within range.
 - **Proximity check** (after landing): for each player within distance 0–1 (8-directional, including the landed-on tile), the active player gets a menu: **Initiate PvP**, **Do Nothing**, **Propose Alliance**, or — conditionally — **Heal** (see next bullet). Where multiple players are in range, the active player first picks one target, then sees the menu for that target.
 - **Heal (4th proximity option, conditional — promoted to canon in the unification pass):** shown only when the chosen target is **Poisoned** *and* is a **current ally** of the active player. Cures the target's Poison and ends the active player's turn. Not class-locked — any allied player can Heal. Free (no Coin cost, unlike the Church).
 - **Opening grace period (promoted to canon):** during each player's **own first 2 turns** (tracked per-player, not the game's first 2 turns globally), that player can neither initiate PvP/Alliance/Heal nor be targeted by anyone else's proximity menu. A grace-period player is simply dropped from others' target lists. Skipping a turn or resting at the Inn still counts as one of the 2 grace turns.
@@ -56,7 +62,7 @@ Two game modes exist: **Prized Game** (real stakes, variable entry fee, full eco
 
 - **20x20 fixed grid.** Outer ring = permanent path (hard boundary, no wrap-around).
 - **Town Center:** walled 5x5 block at dead center, all players start here, exits via **4 middle tiles** (one per edge).
-- **Movement is path-following, not free 2D movement.** Any blank gap wider than 1 tile is filled with obstacles (trees/crates), leaving only a single-tile-wide path network. At forks, the player **actively chooses** which branch to take — intentional, to enable **chasing dynamics** between players.
+- **Movement is path-following, not free 2D movement.** Any blank gap wider than 1 tile is filled with obstacles (trees/crates), leaving only a single-tile-wide path network. At forks, the player **actively chooses** which branch to take — intentional, to enable **chasing dynamics** between players. Distance is **roll-a-maximum, move 1..N of the player's choice** (revised 2026-08-28 — see Section 2); the die sets a ceiling, not an exact step count.
 - **Board generation:** grid/Town Center/outer ring are fixed every game. Property placement is player-chosen each game. The obstacle/path layout filling the gaps is **procedurally generated after** properties are placed.
 - **Properties:** 3x3 impassable block + 1 entry tile (10 tiles total, entry tile above the block's center). Must be **at least 1 tile apart** from any other property. Max **2 per player**, up to **10 total** on one board (5 players × 2).
 - **Special locations:** Inn (heal HP), Blacksmith (level equipment), Church (cure Poison/Paralysis) — one of each, 2x2 block + 1 entry tile, randomly placed at game start, **all three cost Coins to use**.
@@ -181,10 +187,10 @@ Full multi-round card battle (Draw/Battle/End phases — simplified from an earl
 
 ---
 
-## 11. Property Economy (Section 10 — FULLY LOCKED)
+## 11. Property Economy (Section 10 — FULLY LOCKED; Gem accelerator added 2026-08-28)
 
 - Two-currency system as described in Section 1 above.
-- **Fel sinks:** property leveling cost + the 20% Prized Game pot burn.
+- **Fel sinks:** property leveling cost + the 20% Prized Game pot burn. **Both remain** — the 2026-08-28 revision did *not* remove Fel from leveling (that would leave only one Fel sink and risk Fel inflation). See the Gem accelerator in Section 12.
 - **Coin source:** property rent + card draws.
 - **Resale market:** player-driven (owners list, buyers purchase directly — not NPC/algorithmic). Currency: **Gems**, buyer to seller, **zero-sum transfer** (no new currency created — protects against inflation). **5% resale fee** on transactions. Prices are **not fixed** — sellers set their own asking price (inherently variable, since it's player-driven).
 
@@ -201,7 +207,10 @@ Full multi-round card battle (Draw/Battle/End phases — simplified from an earl
 
 - **Level 5 is a hard cap** — no levels beyond it.
 - Fel costs are fixed regardless of the match's stake tier (Fel is fungible/persistent).
+- **Two things gate a level-up:** (1) the property has earned its cumulative-Coin threshold (rent + card draws — the "payment of stepping on it"), and (2) the owner pays the Fel cost.
+- **Gem accelerator (added 2026-08-28):** the owner may spend a set amount of **Gems** to **waive the cumulative-Coin threshold** for one level-up — the Fel cost is **still paid**. This keeps money as an *accelerant* (skip the grind), not a *hard skip* (you still need Fel, which is earnable by winning Prized Games), so it doesn't break the anti-pay-to-win principle, and it adds a real Gem sink without removing a Fel sink. It does **not** raise the Level 5 cap or change card-quality scaling.
 - 🔓 OPEN: the Coin threshold numbers (needs rent-rate and property-card-value data first — explicitly a rebalancing task, not a design question). **Starting hypothesis proposed below — not locked, needs playtesting.**
+- 🔓 OPEN: the **Gem amount per tier** for the accelerator. Should scale with the tier's Fel cost converted at the (still undefined) Gems↔Fel rate, and sit high enough that grinding the Coin gate stays the default path for non-payers. Frame as a proposal only until the Gems↔Fel rate exists (same blocker as the property Gem price, Section 9/10).
 
 **Proposed Coin thresholds — reasoning (unconfirmed, playtest hypothesis):**
 1. Anchored on the design's own stated working assumption of ~3–6 visits/game/property; took a mid-range ~4 visits/game as the planning figure.
@@ -363,6 +372,7 @@ Game Instance
 **Deferred to a dedicated numeric balance pass** (not design questions — need real playtesting/economic modeling):
 - Exact Gem price for properties (Section 09) — proposed framework in-section, blocked on a Coins↔Gems rate
 - Exact Coin thresholds for property leveling (Section 11) — proposed hypothesis in-section (450 / 1,050 / 2,100 / 3,600)
+- Exact Gem amount per tier for the leveling accelerator (Section 11) — blocked on the Gems↔Fel rate
 - How quickly max equipment level is reachable in one match (Section 08)
 - Exact Campaign reward amounts (Section 22)
 - Booster Pack contents/pricing (Section 16)
@@ -384,3 +394,7 @@ Game Instance
 - Ally-Heal proximity option → promoted to canon (Section 02)
 - Opening 2-turn per-player grace period → promoted to canon (Section 02)
 - Combat formula discrepancy between `classes.md` and the prototype → `classes.md` corrected to the `max(1, …)` formula
+
+**Design revisions — 2026-08-28 (later same day)** — changes to previously-locked sections, made by the design owner:
+- **Movement:** the roll now sets a **maximum**; the player moves **1..N tiles of their choice** and stops where they like (Section 02/03). Fixes the "can't reliably land on a property" friction; randomness deliberately retained. *Edits locked Section 01/02.*
+- **Property leveling:** added an optional **Gem accelerator** that waives the cumulative-Coin threshold for one level-up (Fel cost still paid) — Section 11. Fel was **not** removed from leveling. *Edits locked Section 10.*
